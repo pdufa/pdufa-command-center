@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 REPORTS=ROOT/'reports/scientific-levels1-6'
+RESEARCH_ROSTER=REPORTS/'focus-roster-20261114.json'
 OUTPUT=ROOT/'new-platform/frontend/data/level16AssessmentEvidence.json'
 SOURCES=['focus-source-research-20261114.json','orca2-owner-research-dossier-20261114-v1.json',
          'orca2-publication-outcomes-20261114.json','orca3-publication-outcomes-20261114.json']
@@ -25,7 +26,9 @@ def module(name):
 def build():
     research,dossier,orca2,orca3=[json.loads((REPORTS/name).read_text(encoding='utf-8')) for name in SOURCES]
     prep=module('level16_research_preparation')
-    roster=json.loads(prep.ROSTER.read_text(encoding='utf-8'))
+    roster=json.loads(RESEARCH_ROSTER.read_text(encoding='utf-8'))
+    if roster['asOf'] != research['evidenceCutoffDate']:
+        raise ValueError('Research roster date does not match the frozen evidence cutoff')
     ncts=[r['nct'] for r in roster['records']]
     prep.validate_snapshot(research,ncts)
     module('level16_scientific_coverage').coverage(research)

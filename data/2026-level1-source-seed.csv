@@ -1,0 +1,2 @@
+application_id,review_cycle,indication,pdufa_date,prediction,prediction_frozen_at,evidence_cutoff_at,actual_outcome,outcome_published_at,source_url
+BLA761524,UNKNOWN,UNKNOWN,2026-11-13,,,,CRL,2026-11-13T00:00:00Z,https://www.pdufa.bio/crl/2026/november

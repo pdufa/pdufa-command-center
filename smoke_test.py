@@ -376,114 +376,12 @@ for r in history_2024:
     if not (0.3 <= cap <= 10.0):
         raise SystemExit(f"2024 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
 
-app = (ROOT / "app.py").read_text(encoding="utf-8")
-required_ui_contracts = [
-    "Probability of Approval % — Public",
-    "Probability of Approval % — All Sources",
-    "Direction / FDA Match",
-    "calendar-event-link",
-    "color:#17211a !important",
-    'return "Not scored"',
-    'def _merged_table_sort_series',
-    'def _sort_header_button',
-    'def _merged_sort_payload',
-    'components.html(table_html',
-    "btn.addEventListener('click'",
-    "icon.textContent = idx === activeIndex ? (ascending ? '▲' : '▼') : '⇅'",
-    'Click the boxed ⇅ icon',
-    'def load_second_financing_backfill',
-    'second-fin-verified',
-    '"Second Financing Verified"',
-    '"Financing #2 Status"',
-    'FINANCING CACHE FIX',
-    '"2F Announced"',
-    '"2F Running"',
-    '"2F Closed"',
-    'SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]',
-    'colspan="3">2nd Financing',
-    'APPLICATION_COLUMNS = ["N", "B"]',
-    'colspan="2">Application',
-    '"PDUFA"',
-    '"data/second_financing_status.csv"',
-    'def run_recheck_worker',
-    '"data/recheck_status.csv"',
-    'nav_options = ["PDUFA"',
-    'on_change=_on_main_nav_change',
-    'key="pdufa_subtab", on_change="rerun"',
-    '["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]',
-    '"PIPELINE"',
-    '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
-    'master_with_phase3(df)',
-    '### PDUFA COUNTDOWN — DATE GRADIENT',
-    'WATCHLIST MANAGEMENT',
-    'render_watchlist_indicators()',
-    'render_analysis_invest_signals()',
-    'if not applied:',
-    'st.session_state.get("pipeline_applied_v9") == selection_signature',
-    '"FDA MODEL %"',
-    '"FDA CALL"',
-    '"FDA GATE"',
-    'def load_fda_review_engine',
-    '"data/fda_review_engine.csv"',
-    '"data/fda_prediction_freezes.csv"',
-    '"data/fda_review_backfill_queue.csv"',
-    'def load_fda_review_backfill_queue',
-    '"FDA Backfill"',
-    '"FDA Direction"',
-    'def load_fda_v3_historical_backtest',
-    '@media (max-width: 768px)',
-    'FDA DECISION ENGINE V3.2',
-    'Stats gate',
-    'CMC gate',
-    'Facility gate',
-    'Primary endpoint',
-    'Process validation',
-    'Preapproval inspection',
-    'def load_fda_facility_registry',
-    '"FDA Facilities"',
-    'Manufacturing / Facility Evidence',
-    '"data/fda_facility_registry.csv"',
-    'FDA DECISION ENGINE V3.2',
-    'BIMO / data integrity',
-    'Data-integrity gate',
-    '"FDA Monitor"',
-    '"FDA regulatory signals"',
-    '"FDA Extension"',
-    '"FDA extensions"',
-    'Current PDUFA',
-    '"FDA Directional"',
-]
-for label in required_ui_contracts:
-    if label not in app:
-        raise SystemExit(f"app.py missing required audit/UI contract: {label}")
-if ',"10. MATCH OPTIMIZER","11. PLAN"' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
-    raise SystemExit("Match Optimizer must not remain a standalone navigation page")
-# Standalone Prediction Engine and Match Optimizer were intentionally
-# retired. Both archived model inputs and the clinical GEM scans remain.
-if 'nav_options = ["PDUFA", "2. PDUFA CALENDAR"]' not in app:
-    raise SystemExit("Main navigation must contain PDUFA and Calendar; SCANS is nested")
-if 'elif page == "SCANS":' in app or 'render_scans_activity()' in app:
-    raise SystemExit("Duplicate standalone SCANS page must remain retired")
-if 'if st.session_state.nav == "SCANS":' not in app or 'st.session_state["pdufa_subtab"] = "SCANS"' not in app:
-    raise SystemExit("Former standalone SCANS bookmarks must migrate to PDUFA SCANS")
-if not (Path("scan_activity_dashboard.py").is_file()
-        and Path("tests/test_scan_activity_dashboard.py").is_file()
-        and 'render_scans_activity(embedded=True)' in Path("nightly_scan_dashboard.py").read_text(encoding="utf-8")):
-    raise SystemExit("Read-only scan history must remain accessible in unified PDUFA SCANS")
-if 'elif page == "9. PREDICTION ENGINE":' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
-    raise SystemExit("Retired Prediction Engine/Match Optimizer page was restored")
-if 'if st.session_state.nav in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):' not in app:
-    raise SystemExit("Legacy prediction bookmarks must redirect safely to PDUFA")
-if app.index('nav_options = ["PDUFA"') > app.index('elif page == "2. PDUFA CALENDAR":'):
-    raise SystemExit("PDUFA navigation must precede the calendar")
-if 'render_nightly_scan_report()' not in app:
-    raise SystemExit("Retiring the Prediction Engine must not remove SCANS")
-
-# Obsolete navigation and the oversized table grid must not return.
-if 'if page == "WATCHLIST":' in app:
-    raise SystemExit("app.py: obsolete standalone WATCHLIST page restored")
-if "master_watchlist_main_editor" in app:
-    raise SystemExit("app.py: removed Master Table editor was restored")
+# The retired Streamlit UI was tested here previously. The active interfaces
+# have their own frontend and backend behavior suites in .github/workflows/ci.yml.
+for route in ("past", "pool", "focus", "assessments"):
+    page = ROOT / "new-platform" / "frontend" / "app" / route / "page.tsx"
+    if not page.is_file():
+        raise SystemExit(f"Missing Next.js route: {route}")
 
 # Missing probabilities must remain missing/not-scored rather than being silently
 # coerced into a misleading literal 0% display.

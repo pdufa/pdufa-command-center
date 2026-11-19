@@ -1,0 +1,6 @@
+application_id,review_cycle,drug,ingredient,sponsor,action_date,outcome,source_url,pdufa_goal_date,level1_prediction,cohort_status
+BLA761501,ORIGINAL,PEBRILZO,pertuzumab,Biocon Biologics Inc,2026-11-12,APPROVAL,https://www.pdufa.bio/fda-decisions-today,,,FDA_ACTION_CONFIRMED_PDUFA_DATE_UNVERIFIED
+BLA761069,S-59,IMFINZI,durvalumab,AstraZeneca,2026-11-13,APPROVAL,https://www.pdufa.bio/fda-decisions-today,,,FDA_ACTION_CONFIRMED_PDUFA_DATE_UNVERIFIED
+BLA761488,ORIGINAL,KLYGEFA,gefurulimab,Alexion Pharm,2026-11-13,APPROVAL,https://www.pdufa.bio/fda-decisions-today,,,FDA_ACTION_CONFIRMED_PDUFA_DATE_UNVERIFIED
+NDA217369,S-4,ZURZUVAE,zuranolone,Biogen,2026-11-13,APPROVAL,https://www.pdufa.bio/fda-decisions-today,,,FDA_ACTION_CONFIRMED_PDUFA_DATE_UNVERIFIED
+BLA761524,UNKNOWN,Ivonescimab,ivonescimab,Summit Therapeutics,2026-11-13,CRL,https://www.pdufa.bio/crl/2026/november,,,FDA_ACTION_CONFIRMED_PDUFA_DATE_UNVERIFIED

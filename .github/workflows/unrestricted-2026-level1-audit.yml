@@ -1,0 +1,39 @@
+name: Unrestricted 2026 Level 1 audit tests
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_2026_unrestricted_level1.py'
+      - 'scripts/project_2026_level1_contracts.py'
+      - 'scripts/prepare_2026_l1_blind_reconstruction.py'
+      - 'scripts/validate_2026_l1_blind_packets.py'
+      - 'scripts/score_2026_l1_blind_rubric.py'
+      - 'reports/2026-unrestricted-level1/**'
+      - 'tests/test_2026_unrestricted_level1_audit.py'
+      - 'tests/test_prepare_2026_l1_blind_reconstruction.py'
+      - 'tests/test_validate_2026_l1_blind_packets.py'
+      - 'tests/test_score_2026_l1_blind_rubric.py'
+      - '.github/workflows/unrestricted-2026-level1-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run isolated audit regression tests
+        run: python -m unittest discover -s tests -p 'test_2026_unrestricted_level1_audit.py' -v
+      - name: Run isolated blind reconstruction and rubric tests
+        run: |
+          python -m unittest discover -s tests -p 'test_prepare_2026_l1_blind_reconstruction.py' -v
+          python -m unittest discover -s tests -p 'test_validate_2026_l1_blind_packets.py' -v
+          python -m unittest discover -s tests -p 'test_score_2026_l1_blind_rubric.py' -v
+      - name: Validate blind evidence provenance without opening outcomes
+        run: python scripts/validate_2026_l1_blind_packets.py > /tmp/level1-blind-packet-status.csv
+      - name: Validate the frozen assessment exports
+        run: |
+          python scripts/audit_2026_unrestricted_level1.py --snapshot reports/2026-unrestricted-level1/2026-11-18
+          python scripts/audit_2026_unrestricted_level1.py --snapshot reports/2026-unrestricted-level1/2026-11-18/reconciled

@@ -1,0 +1,5 @@
+drug_or_application,action_date,reported_outcome,application_id,indication,source_url,cohort_status,blind_prediction_status
+Neladalkib (NVL-655),2026-11-17,APPROVAL,,,https://www.pdufa.bio/fda-decisions-today,REQUIRES_APPLICATION_RECONCILIATION,NOT_VERIFIED
+Aficamten,2026-11-16,APPROVAL,,,https://www.pdufa.bio/fda-decisions-today,REQUIRES_APPLICATION_RECONCILIATION,NOT_VERIFIED
+Giredestrant plus everolimus,2026-11-16,APPROVAL,,ESR1-mutated advanced breast cancer,https://www.fda.gov/drugs/cancer-approvals/fda-approves-giredestrant-combination-everolimus-er-positive-her2-negative-esr1-mutated-locally,REQUIRES_APPLICATION_RECONCILIATION,NOT_VERIFIED
+Ivonescimab,2026-11-15,CRL,,EGFR-mutated NSCLC,https://www.pdufa.bio/fda-decisions-today,REQUIRES_APPLICATION_RECONCILIATION,NOT_VERIFIED

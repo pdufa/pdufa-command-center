@@ -1,0 +1,1686 @@
+{
+  "as_of": "2026-11-18T20:03:10.675218+00:00",
+  "complete": false,
+  "year_population_blockers": [
+    {
+      "id": "DENOMINATOR",
+      "finding": "Public FDA sources expose action records and selected review files. They do not enumerate every application and review goal across pending, private, delayed or undisclosed cases. Other calendar counts differ and include action dates or placeholders.",
+      "next_action": "Acquire a disclosed exact-goal export and original filing sources for the claimed provisional cohort. Match them to public application IDs and track any inaccessible targets as unobservable."
+    },
+    {
+      "id": "IDENTITY",
+      "finding": "Pending claims frequently omit the application or supplement number, and some candidates lack a direct goal source or have approximate dates.",
+      "next_action": "Crosswalk official filing notices, action letters and sponsor disclosures to exact cycle, supplement and indication. Review unresolved aliases before counting them."
+    },
+    {
+      "id": "CLINICAL",
+      "finding": "Most FDA action letters and calendar rows do not contain pivotal estimates, tests or comparative safety.",
+      "next_action": "Obtain indication-matched pivotal protocols, dated registry versions, trial publications and FDA reviews. Record nulls and blockers when results are inaccessible."
+    },
+    {
+      "id": "HISTORICAL",
+      "finding": "No eligible historical Level 1 comparisons were established. The contemporaneous HARMONi pilot belongs to a separate research series.",
+      "next_action": "Locate immutable pre-action Level 1 versions and contemporaneous evidence manifests. Verify exact cycle and earliest public outcome before scoring."
+    },
+    {
+      "id": "YEAR_OPEN",
+      "finding": "The collection date is November 18, before the end of the 2026 calendar year.",
+      "next_action": "Append a new dated snapshot after year-end and reconcile late announcements, additional decisions and amendments."
+    }
+  ],
+  "identity_or_goal_blockers": [
+    {
+      "record_id": "2026-L1-010",
+      "drug": "TZIELD",
+      "application_id": "BLA761183",
+      "goal_date": "2026-04-29",
+      "reason": "FDA letter confirms S-013 approval for the age-related stage 2 diabetes label change on April 20. April 29 appears in the calendar but no S-013 primary goal document was located. The S-010/S-014 review concerns separate June actions.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761183s013lbl.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761183Orig1s013ltr.pdf",
+        "https://www.assyro.com/tools/pdufa-calendar/2026"
+      ]
+    },
+    {
+      "record_id": "2026-L1-021",
+      "drug": "Truqap - (CAPItello-281)",
+      "application_id": "NDA218197",
+      "goal_date": "2026-06-30",
+      "reason": "Drugs@FDA identifies NDA 218197/S-004 for the June 12 CAPItello-281 action. S-006 is a later supplement. The June 30 calendar claim remains an unverified goal.",
+      "sources": [
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-capivasertib-abiraterone-and-prednisone-pten-deficient-androgen-pathway-modulation",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
+        "https://www.pdufa.bio/ticker/AZN",
+        "https://www.fda.gov/media/89850/download"
+      ]
+    },
+    {
+      "record_id": "2026-L1-044",
+      "drug": "Inluriyo (imlunestrant) + Verzenio (abemaciclib) - (EMBER-3)",
+      "application_id": "NDA218881",
+      "goal_date": "2026-09-18",
+      "reason": "FDA confirms NDA 218881/S-001. Exact PDUFA goal and amendment history remain unverified.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218881s001lbl.pdf",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-imlunestrant-combination-abemaciclib-er-positive-her2-negative-esr1-mutated-advanced-or",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
+        "https://www.pdufa.bio/ticker/LLY",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf"
+      ]
+    },
+    {
+      "record_id": "2026-L1-049",
+      "drug": "Gazyva (obinutuzumab) - idiopathic nephrotic syndrome",
+      "application_id": "BLA125486",
+      "goal_date": "2026-09-25",
+      "reason": "FDA action on the idiopathic-nephrotic-syndrome supplement is established. The attributed September 25 date matches the action and lacks an independent goal-date source.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/125486s043lbl.pdf",
+        "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-drug-treat-idiopathic-nephrotic-syndrome-patients-2-years-and-older",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
+        "https://www.pdufa.bio/fda-decision/RHHBY-2026-09-25"
+      ]
+    },
+    {
+      "record_id": "2026-L1-057",
+      "drug": "Jaypirca (pirtobrutinib) - previously untreated CLL/SLL",
+      "application_id": "NDA216059",
+      "goal_date": "2026-10-02",
+      "reason": "Drugs@FDA identifies NDA 216059/S-006 as the October 2 approval for first-line CLL/SLL. The exact PDUFA goal remains unverified.",
+      "sources": [
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pirtobrutinib-previously-untreated-chronic-lymphocytic-leukemia-or-small-lymphocytic",
+        "https://www.pdufa.bio/fda-decision/LLY-2026-10-02",
+        "https://www.fda.gov/media/89850/download"
+      ]
+    },
+    {
+      "record_id": "2026-L1-058",
+      "drug": "Rhapsido (remibrutinib) - symptomatic dermographism",
+      "application_id": "NDA218436",
+      "goal_date": "2026-10-06",
+      "reason": "FDA labeling identifies NDA 218436/S-001 for symptomatic dermographism. October 6 is the action date, and an exact PDUFA goal is still unverified.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218436Orig1s001ltr.pdf",
+        "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
+        "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
+      ]
+    },
+    {
+      "record_id": "2026-L1-060",
+      "drug": "Ifinatamab deruxtecan (I-DXd)",
+      "application_id": "",
+      "goal_date": "2026-10-10",
+      "reason": "Merck confirms the October 10-goal small cell lung cancer application was voluntarily withdrawn September 25 after FDA feedback. The exact BLA number remains unavailable.",
+      "sources": [
+        "https://www.merck.com/news/ifinatamab-deruxtecan-granted-priority-review-in-the-u-s-for-adult-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-who-experienced-disease-progression-on-or-after-platinum-bas/",
+        "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
+        "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan",
+        "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/"
+      ]
+    },
+    {
+      "record_id": "2026-L1-066",
+      "drug": "Sunharbo (asundexian) - secondary stroke prevention",
+      "application_id": "NDA221291",
+      "goal_date": "2026-11-09",
+      "reason": "Drugs@FDA confirms NDA 221291 and November 9 approval. A cited date is the public action, and an independently identified exact review goal is still needed.",
+      "sources": [
+        "https://www.fda.gov/news-events/press-announcements/fda-approves-first-factor-xla-inhibitor-help-prevent-stroke-certain-adults-high-risk",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=221291",
+        "https://www.pdufa.bio/fda-decision/BAYRY-2026-11-09"
+      ]
+    },
+    {
+      "record_id": "2026-L1-067",
+      "drug": "Pimjetmi (pimicotinib) - tenosynovial giant cell tumor",
+      "application_id": "NDA220414",
+      "goal_date": "2026-11-10",
+      "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal. FDA’s novel-approvals index separately lists November 13. Retain the November 10 application action and reconcile the index discrepancy before using either date as a goal.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220414Orig1s000ltr.pdf",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
+        "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10",
+        "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026"
+      ]
+    },
+    {
+      "record_id": "2026-L1-072",
+      "drug": "MOLBREEVI (molgramostim inhalation) - (IMPALA-2)",
+      "application_id": "",
+      "goal_date": "2026-11-22",
+      "reason": "Savara discloses the original August 22 and revised November 22 goal. Exact pending BLA/STN was not found in the reviewed 10-Q, FDA listings or IMPALA-2 trial material.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1160308/000119312526219371/svra-20260331.htm",
+        "https://www.pdufa.bio/pdufa/SVRA-molbreevi"
+      ]
+    },
+    {
+      "record_id": "2026-L1-074",
+      "drug": "Venglustat",
+      "application_id": "",
+      "goal_date": "2026-11-25",
+      "reason": "Sanofi’s priority-review notice confirms November 25 for type 3 Gaucher disease. The pending original NDA number was not disclosed in that notice or identified in the FDA snapshot.",
+      "sources": [
+        "https://www.sanofi.com/en/media-room/press-releases/2026/2026-05-28-05-00-00-3302498"
+      ]
+    },
+    {
+      "record_id": "2026-L1-075",
+      "drug": "BBP-418 (ribitol) - (FORTIFY)",
+      "application_id": "",
+      "goal_date": "2026-11-27",
+      "reason": "BridgeBio’s filing identifies the priority NDA for LGMD2I/R9 and November 27. The filing does not disclose the pending FDA application number.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000034/bbio-20260930.htm",
+        "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
+        "https://www.pdufa.bio/pdufa/BBIO-bbp-418"
+      ]
+    },
+    {
+      "record_id": "2026-L1-076",
+      "drug": "Neladalkib (NVL-655) - (ALKOVE-1)",
+      "application_id": "",
+      "goal_date": "2026-11-27",
+      "reason": "November 27 is sponsor-disclosed and FDA announced accelerated approval November 17 for the labeled indication. The exact NDA number was absent from the prior-day archive and FDA notification reviewed.",
+      "sources": [
+        "https://clinicaltrials.gov/study/NCT05384626",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-neladalkib-previously-treated-locally-advanced-or-metastatic-alk",
+        "https://investors.nuvalent.com/2026-05-27-Nuvalent-Announces-Key-Program-and-Business-Updates,-Strengthening-Foundation-for-Global-Leadership-in-ROS1-and-ALK-positive-NSCLC",
+        "https://www.pdufa.bio/fda-decision/GSK-2026-11-17"
+      ]
+    },
+    {
+      "record_id": "2026-L1-077",
+      "drug": "D-PLEX100 - prevention of surgical site infections",
+      "application_id": "",
+      "goal_date": "2026-11-28",
+      "reason": "PolyPid discloses November 28 for the priority surgical-site-infection NDA. The exact pending NDA number is not public in the reviewed filing.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1611842/000121390026082564/ea029964201ex99-1.htm",
+        "https://www.pdufa.bio/pdufa/PYPD-d-plex100"
+      ]
+    },
+    {
+      "record_id": "2026-L1-078",
+      "drug": "Bezuclastinib + sunitinib - (PEAK)",
+      "application_id": "",
+      "goal_date": "2026-11-30",
+      "reason": "Cogent discloses November 30 for PEAK and a distinct December 30 date for SUMMIT. The PEAK pending NDA number was not established.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
+        "https://www.pdufa.bio/pdufa/COGT-bezuclastinib"
+      ]
+    },
+    {
+      "record_id": "2026-L1-079",
+      "drug": "Cemdisiran (C5 RNAi) - (NIMBLE)",
+      "application_id": "",
+      "goal_date": "2026-11-30",
+      "reason": "Regeneron materials give a November decision window for cemdisiran in gMG. The calendar maps the window to November 30; confirm exact goal, approved or pending path and NDA identity.",
+      "sources": [
+        "https://investor.regeneron.com/news-releases/news-release-details/cemdisiran-regulatory-submissions-accepted-review-fda-and-ema",
+        "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
+        "https://www.pdufa.bio/pdufa/REGN-cemdisiran"
+      ]
+    },
+    {
+      "record_id": "2026-L1-080",
+      "drug": "Gazyva (obinutuzumab) - primary membranous nephropathy (MAJESTY)",
+      "application_id": "BLA125486",
+      "goal_date": "2026-11-30",
+      "reason": "FDA and Genentech confirm approval November 13 and Drugs@FDA lists S-044. The sponsor materials reviewed do not turn the November window into a confirmed November 30 goal.",
+      "sources": [
+        "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-drug-treat-adults-primary-membranous-nephropathy",
+        "https://www.gene.com/media/press-releases/15143/2026-11-15/genentechs-gazyva-becomes-the-first-fda-",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
+        "https://www.pdufa.bio/fda-decision/RHHBY-2026-11-13"
+      ]
+    },
+    {
+      "record_id": "2026-L1-081",
+      "drug": "Giredestrant (lidERA)",
+      "application_id": "",
+      "goal_date": "2026-11-30",
+      "reason": "Genentech confirms November 30 for adjuvant early breast cancer. The exact pending lidERA NDA number is unverified. The advanced evERA approval cannot supply that identity.",
+      "sources": [
+        "https://www.gene.com/media/press-releases/15115/2026-06-01/fda-accepts-new-drug-application-for-gen",
+        "https://www.pdufa.bio/pdufa/RHHBY-giredestrant"
+      ]
+    },
+    {
+      "record_id": "2026-L1-082",
+      "drug": "HYRNUO (sevabertinib) - HER2-mutant NSCLC",
+      "application_id": "NDA219972",
+      "goal_date": "2026-11-30",
+      "reason": "FDA confirms the 2026 accelerated HER2 NSCLC supplement action on September 9 and a separate 2025 original action. Neither establishes the asserted November 30 goal.",
+      "sources": [
+        "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-sevabertinib-locally-advanced-or-metastatic-non-squamous-non-small",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219972",
+        "https://www.pdufa.bio/ticker/BAYRY"
+      ]
+    },
+    {
+      "record_id": "2026-L1-083",
+      "drug": "Povetacicept (ALPN-303)",
+      "application_id": "",
+      "goal_date": "2026-11-30",
+      "reason": "Vertex confirms November 30 for the priority accelerated IgA nephropathy BLA. The exact pending BLA number was not established from FDA sources.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/875320/000087532026000291/vrtx-20260930.htm",
+        "https://news.vrtx.com/news-releases/news-release-details/vertex-announces-us-fda-acceptance-biologics-license-application",
+        "https://www.sec.gov/Archives/edgar/data/875320/000087532026000256/ex-991_q22026.htm",
+        "https://www.pdufa.bio/pdufa/VRTX-povetacicept"
+      ]
+    },
+    {
+      "record_id": "2026-L1-084",
+      "drug": "Imsidolimab",
+      "application_id": "",
+      "goal_date": "2026-12-12",
+      "reason": "Vanda confirms December 12 for the GPP BLA. The filing does not disclose the exact pending BLA/STN.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1347178/000162828026053308/vnda8-k852026exhibit991.htm",
+        "https://www.pdufa.bio/pdufa/VNDA-imsidolimab"
+      ]
+    },
+    {
+      "record_id": "2026-L1-087",
+      "drug": "Lorundrostat",
+      "application_id": "",
+      "goal_date": "2026-12-22",
+      "reason": "Mineralys confirms December 22 for the hypertension NDA. The exact pending application number is absent from the acceptance filing.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000144/mlys-20260930.htm",
+        "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm",
+        "https://www.globenewswire.com/news-release/2026/11/04/3395833/0/en/mineralys-therapeutics-reports-third-quarter-2026-financial-results-and-provides-corporate-update.html",
+        "https://www.pdufa.bio/pdufa/MLYS-lorundrostat"
+      ]
+    },
+    {
+      "record_id": "2026-L1-088",
+      "drug": "Anito-cel (anitocabtagene autoleucel)",
+      "application_id": "",
+      "goal_date": "2026-12-23",
+      "reason": "Arcellx filing establishes December 23 for fourth-line or later myeloma; the pending BLA/STN was not located in public filings.",
+      "sources": [
+        "https://www.cms.gov/files/document/fall-2025-icd-10-pcs-update-materials.pdf",
+        "https://www.sec.gov/Archives/edgar/data/1786205/000119312526076876/aclx-20251231.htm",
+        "https://www.gilead.com/news/news-details/2026/gilead-and-kite-advance-leadership-with-new-data-across-pipeline-and-portfolio-at-ash-2026",
+        "https://www.pdufa.bio/pdufa/GILD-anito-cel"
+      ]
+    },
+    {
+      "record_id": "2026-L1-089",
+      "drug": "MR-107A-02 (fast-acting meloxicam)",
+      "application_id": "",
+      "goal_date": "2026-12-27",
+      "reason": "Viatris reports a December 27 goal for the acute-pain NDA. An exact pending NDA number was not established from FDA data or the sponsor filing.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1792044/000179204426000037/exhibit991-2q26earningsrel.htm",
+        "https://www.pdufa.bio/pdufa/VTRS-mr-107a-02"
+      ]
+    },
+    {
+      "record_id": "2026-L1-090",
+      "drug": "Relutrigine (PRAX-562) - (EMBOLD)",
+      "application_id": "",
+      "goal_date": "2026-12-27",
+      "reason": "Praxis documents the major amendment and extension from September 27 to December 27. The pending NDA number is not identified in its reviewed filing.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000089/prax-20260930.htm",
+        "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
+        "https://www.pdufa.bio/pdufa/PRAX-relutrigine"
+      ]
+    },
+    {
+      "record_id": "2026-L1-091",
+      "drug": "Bezuclastinib (CGT9486) - (SUMMIT)",
+      "application_id": "",
+      "goal_date": "2026-12-30",
+      "reason": "Cogent confirms December 30 for SUMMIT nonadvanced mastocytosis. The exact pending NDA number is unverified and the PEAK combination cannot be used to substitute.",
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
+        "https://www.pdufa.bio/pdufa/COGT-bezuclastinib-summit"
+      ]
+    },
+    {
+      "record_id": "2026-L1-092",
+      "drug": "CagriSema (AM833)",
+      "application_id": "",
+      "goal_date": "2026-12-31",
+      "reason": "Novo gives a fourth-quarter decision expectation. December 31 is calendar normalization; the exact FDA target and pending application number remain unverified.",
+      "sources": [
+        "https://www.novonordisk.com/news-and-media/news-and-ir-materials/news-details.html?id=920561",
+        "https://www.pdufa.bio/pdufa/NVO-am833"
+      ]
+    },
+    {
+      "record_id": "2026-L1-093",
+      "drug": "Gazyva (obinutuzumab) - systemic lupus erythematosus (ALLEGORY)",
+      "application_id": "",
+      "goal_date": "2026-12-31",
+      "reason": "The lupus ALLEGORY application is distinct from the idiopathic and membranous nephropathy supplements. The December 31 calendar value remains a window placeholder without exact target or supplement evidence.",
+      "sources": [
+        "https://www.roche.com/media/releases/med-cor-2026-04-21",
+        "https://www.pdufa.bio/pdufa/RHHBY-gazyva"
+      ]
+    },
+    {
+      "record_id": "2026-L1-095",
+      "drug": "KERENDIA (finerenone), T1D-CKD",
+      "application_id": "NDA215341",
+      "goal_date": "2026-12-31",
+      "reason": "Drugs@FDA records the September 16, 2026 approval of NDA 215341/S-011. The FDA label matches CKD associated with type 1 diabetes. The December 31 calendar date remains unverified as a goal.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215341Orig1s011ltr.pdf",
+        "https://www.pdufa.bio/ticker/BAYRY",
+        "https://www.fda.gov/media/89850/download",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215341s011lbl.pdf"
+      ]
+    },
+    {
+      "record_id": "2026-L1-096",
+      "drug": "Ultomiris (ravulizumab) - IgA nephropathy",
+      "application_id": "BLA761108",
+      "goal_date": "2026-12-31",
+      "reason": "FDA confirms BLA 761108/S-046 for proteinuria in adult primary IgA nephropathy. Exact goal and amendment history remain unavailable.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
+        "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
+        "https://www.pdufa.bio/fda-decision/AZN-2026-10-21"
+      ]
+    }
+  ],
+  "verified_evidence_gaps": [
+    {
+      "record_id": "2026-L1-001",
+      "drug": "Ebvallo (tabelecleucel)",
+      "application_id": "BLA125745",
+      "goal_date": "2026-01-10",
+      "reason": [
+        "Exact endpoint estimates, registry crosswalk, safety and subgroup performance",
+        "Exact ClinicalTrials.gov identity not confirmed"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1604464/000095017025106533/atra-ex99_1.htm",
+        "https://download.open.fda.gov/crl/CRL_BLA125745_20260109.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-002",
+      "drug": "RGX-121 (clemidsogene lanparvovec)",
+      "application_id": "BLA125840",
+      "goal_date": "2026-02-08",
+      "reason": [
+        "Exact registry crosswalk",
+        "Quantitative surrogate effects and safety tables",
+        "Exact ClinicalTrials.gov identity not confirmed"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1590877/000095017025109829/rgnx-20250818.htm",
+        "https://download.open.fda.gov/crl/CRL_BLA125840_20260207.pdf",
+        "https://www.sec.gov/Archives/edgar/data/1590877/000119312526094013/rgnx-20251231.htm"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-003",
+      "drug": "Bysanti (milsaperidone)",
+      "application_id": "NDA220358",
+      "goal_date": "2026-02-21",
+      "reason": [
+        "Full relative-bioavailability bridge and condition-specific trial estimates"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1347178/000162828026007256/vnda8-k2112026exhibit991.htm",
+        "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=254a1c01-4a4c-4bdd-85d6-1f23f2e4e6f8&type=display"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-004",
+      "drug": "Desmoda (desmopressin)",
+      "application_id": "NDA219873",
+      "goal_date": "2026-02-25",
+      "reason": [
+        "Full bridging review and product-specific quantitative safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1710340/000143774925022298/ex_836124.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219873Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-005",
+      "drug": "Reproxalap (ADX-102)",
+      "application_id": "NDA216442",
+      "goal_date": "2026-03-16",
+      "reason": [
+        "Trial-level efficacy and comparative safety tables",
+        "Exact ClinicalTrials.gov identity not confirmed"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1341235/000119312525319638/aldx-ex99_1.htm",
+        "https://download.open.fda.gov/crl/CRL_NDA216442_20260316.pdf",
+        "https://ir.aldeyra.com/node/13261"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-006",
+      "drug": "Imcivree (setmelanotide)",
+      "application_id": "NDA213793",
+      "goal_date": "2026-03-20",
+      "reason": [
+        "Long-term safety and durability beyond the controlled period"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1649904/000110465925108154/rytm-20251106x8k.htm",
+        "https://www.nejm.org/doi/10.1056/NEJMoa2512275"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-007",
+      "drug": "Filspari (sparsentan)",
+      "application_id": "NDA216403",
+      "goal_date": "2026-04-13",
+      "reason": [
+        "Prespecification and long-term benefit in the restricted population"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/216403Orig1s006Med,StatR.pdf",
+        "https://www.sec.gov/Archives/edgar/data/1438533/000143853326000032/tvtx-20260413.htm"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-008",
+      "drug": "DUPIXENT",
+      "application_id": "BLA761055",
+      "goal_date": "2026-04-27",
+      "reason": [
+        "Precision of safety and performance in the youngest approved CSU age group.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.fda.gov/media/194749/download",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761055s074lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-009",
+      "drug": "IDVYNSO",
+      "application_id": "NDA216964",
+      "goal_date": "2026-04-28",
+      "reason": [
+        "Longer-term comparative resistance and safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/216964s000MultidisciplineR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216964Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-011",
+      "drug": "VYVGART",
+      "application_id": "BLA761195",
+      "goal_date": "2026-05-10",
+      "reason": [
+        "Detailed serologic subgroup and formulation-specific safety estimates",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1697862/000110465926003037/tm262983d1_ex99-1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-012",
+      "drug": "Wellcovorin (leucovorin)",
+      "application_id": "NDA018342",
+      "goal_date": "2026-05-24",
+      "reason": [
+        "Case extraction, treatment duration and adverse-event ascertainment"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/018342Orig1s015Unireview.pdf",
+        "https://www.fda.gov/news-events/press-announcements/fda-approves-first-treatment-patients-cerebral-folate-transport-deficiency"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-013",
+      "drug": "AFREZZA",
+      "application_id": "BLA022472",
+      "goal_date": "2026-05-29",
+      "reason": [
+        "Full FDA benefit–risk rationale for approval despite missed endpoint",
+        "Age-band and diabetes-type estimates",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/899460/000119312526243074/mnkd-20260527.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-014",
+      "drug": "DATROWAY",
+      "application_id": "BLA761394",
+      "goal_date": "2026-06-02",
+      "reason": [
+        "Arm-level adverse-event rates and generalizability"
+      ],
+      "sources": [
+        "https://www.daiichisankyo.com/files/news/pressrelease/pdf/202602/20260203_E.pdf",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-datopotamab-deruxtecan-dlnk-unresectable-or-metastatic-triple-negative-breast-cancer"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-015",
+      "drug": "VEPPANU",
+      "application_id": "NDA219835",
+      "goal_date": "2026-06-05",
+      "reason": [
+        "Mature overall survival, longer follow-up, and comparative safety precision.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219835Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219835Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-016",
+      "drug": "Tebipenem HBr (SPR994) - (PIVOT-PO)",
+      "application_id": "NDA215960",
+      "goal_date": "2026-06-18",
+      "reason": [
+        "Comparative precision for individual pathogens and uncommon harms.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1701108/000119312526221567/d147628dex991.htm",
+        "https://www.sec.gov/Archives/edgar/data/1701108/000119312526458593/spro-20260930.htm",
+        "https://utebzihcp.com/efficacy-safety/primary-endpoint/",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215960Origs000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-017",
+      "drug": "Cytisinicline - (ORCA-3)",
+      "application_id": "NDA218995",
+      "goal_date": "2026-06-20",
+      "reason": [
+        "Facility remediation and reinspection status",
+        "Full application safety assessment"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/949858/000119312526218177/achv-20260331.htm",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+        "https://download.open.fda.gov/crl/CRL_NDA218995_20260620_Redacted.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-018",
+      "drug": "LNTH-2501 (Gallium-68 edotreotide)",
+      "application_id": "NDA216900",
+      "goal_date": "2026-06-29",
+      "reason": [
+        "Diagnostic performance and product-quality remediation"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1521036/000119312526448622/lnth-20260930.htm",
+        "https://download.open.fda.gov/crl/CRL_NDA216900_20260626_Redacted.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-019",
+      "drug": "ZORYVE (roflumilast) Cream 0.3%",
+      "application_id": "NDA215985",
+      "goal_date": "2026-06-29",
+      "reason": [
+        "PK exposure bridge and granular pediatric adverse events",
+        "Exact ClinicalTrials.gov identity not confirmed"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1787306/000178730626000040/arqt-20260331.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215985s015sdn642lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-020",
+      "drug": "Oxylanthanum Carbonate (OLC)",
+      "application_id": "NDA218607",
+      "goal_date": "2026-06-29",
+      "reason": [
+        "FDA facility corrective action and exposure, safety and efficacy in target population"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1766140/000121390026054736/ea029027701ex99-1.htm",
+        "https://pubmed.ncbi.nlm.nih.gov/39617673/",
+        "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf"
+      ],
+      "missing_required_fields": [
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-022",
+      "drug": "Veligrotug (VRDN-001) - (THRIVE-2)",
+      "application_id": "BLA761530",
+      "goal_date": "2026-06-30",
+      "reason": [
+        "Full chronic-disease comparative estimate and safety precision.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1590750/000119312526205010/d149508dex991.htm",
+        "https://pubmed.ncbi.nlm.nih.gov/42223386/",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761530Orig1s000StatR.pdf",
+        "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=11bc286a-5411-45af-af3f-69ad38efb610&type=display",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761530Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-023",
+      "drug": "Olezarsen - (CORE)",
+      "application_id": "NDA218614",
+      "goal_date": "2026-06-30",
+      "reason": [
+        "Precision of dose-specific pancreatitis estimates and longer-term safety.",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/874015/000114036126017637/ef20071749_ex99-1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-024",
+      "drug": "Atacicept - (ORIGIN 3)",
+      "application_id": "BLA761486",
+      "goal_date": "2026-07-07",
+      "reason": [
+        "Confirmatory renal outcome and long-term safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1831828/000119312526073421/vera-ex99_1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761486Orig1s000IntegratedR.pdf",
+        "https://www.sec.gov/Archives/edgar/data/1831828/000119312526449826/vera-20260930.htm"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-025",
+      "drug": "Relacorilant + nab-paclitaxel - (ROSELLA)",
+      "application_id": "NDA220641",
+      "goal_date": "2026-07-11",
+      "reason": [
+        "Detailed comparative toxicity and mature survival estimates"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1088856/000162828026011080/cort022426ex991pressrelease.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-027",
+      "drug": "Gedatolisib with Fulvestrant - (VIKTORIA-1)",
+      "application_id": "NDA219908",
+      "goal_date": "2026-07-17",
+      "reason": [
+        "Longer-term overall survival and regimen-specific comparative safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1603454/000149315226026761/form8-k.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-gedatolisib-fulvestrant-or-without-palbociclib-hr-positive-her2-negative-locally",
+        "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=959d73ef-831f-4005-956c-210702270bda",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219908Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-028",
+      "drug": "SARCLISA ESCENA",
+      "application_id": "BLA761445",
+      "goal_date": "2026-07-23",
+      "reason": [
+        "Bioavailability margins and administration-related event rates.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1121404/000119312526180848/d137048dex992.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761445Orig1s000Correctedltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761445Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-029",
+      "drug": "Centanafadine",
+      "application_id": "NDA218145",
+      "goal_date": "2026-07-24",
+      "reason": [
+        "All adult and pediatric trial effects; formulation bridge and quantitative safety"
+      ],
+      "sources": [
+        "https://www.otsuka-us.com/news/otsuka-announces-fda-acceptance-and-priority-review-new-drug-application-centanafadine",
+        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ecfa41cc-c8c8-419b-8da3-ee5b819398c2",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13538204/"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-030",
+      "drug": "FUROSCIX ReadyFlow Autoinjector (SCP-111)",
+      "application_id": "NDA209988",
+      "goal_date": "2026-07-26",
+      "reason": [
+        "Device reliability, human-factors and comparative exposure package"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/899460/000119312526208910/mnkd-ex99_1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/209988Orig1s007correctedltr.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-031",
+      "drug": "bevacizumab",
+      "application_id": "BLA761320",
+      "goal_date": "2026-07-29",
+      "reason": [
+        "NORSE TWO exact responders and safety rates; FDA resolution of NORSE EIGHT uncertainties"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1649989/000110465926074346/tm2618010d1_ex99-1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761320s000lbl.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761320Orig1s000OtherActionLtrs.pdf",
+        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f9a3014-b3d4-4943-a83a-92a77d8f947c"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-032",
+      "drug": "MR-100A-01(Low dose estrogen weekly patch (150 mcg norelgestromin and 17.5 mcg ethinyl estradiol))",
+      "application_id": "NDA219990",
+      "goal_date": "2026-07-30",
+      "reason": [
+        "Detailed adhesion, event rates and alternative contraceptive context"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1792044/000179204426000010/exhibit991-4q25earningsrel.htm",
+        "https://investor.viatris.com/news-releases/news-release-details/viatris-receives-us-fda-approval-gwyn-lotm-once-weekly",
+        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e92741f4-87fe-429f-b5b5-c558ed5f4fa9"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-033",
+      "drug": "TUDRIQEV (vusolimogene oderparepvec-wtpg) plus nivolumab",
+      "application_id": "BLA125827",
+      "goal_date": "2026-08-02",
+      "reason": [
+        "Confirmatory randomized benefit, systemic response and comparative safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1737953/000110465926088857/tm2621708d1_ex99-1.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-vusolimogene-oderparepvec-wtpg-combination-nivolumab-melanoma",
+        "https://www.fda.gov/media/194230/download"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-034",
+      "drug": "MFLUSIVA (Influenza Vaccine, mRNA / mRNA-1010)",
+      "application_id": "BLA125869",
+      "goal_date": "2026-08-05",
+      "reason": [
+        "Comparative effectiveness across seasons and safety precision in rare events.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.fda.gov/media/194140/download?attachment=",
+        "https://www.fda.gov/media/194538/download"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-035",
+      "drug": "MK-6240",
+      "application_id": "NDA220496",
+      "goal_date": "2026-08-13",
+      "reason": [
+        "Exact reader study, pathology standard and performance intervals"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1521036/000119312526448622/lnth-20260930.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220496Orig1s000ltr.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-036",
+      "drug": "iberdomide, daratumumab, and dexamethasone vs. daratumumab, bortezomib, and dexamethasone - (EXCALIBER RRMM)",
+      "application_id": "NDA221075",
+      "goal_date": "2026-08-17",
+      "reason": [
+        "Mature PFS, OS and full comparative safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/14272/000001427226000020/bmy-20260630.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-iberdomide-daratumumab-and-hyaluronidase-fihj-and-dexamethasone"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-037",
+      "drug": "DTX401 AAV gene therapy (pariglasgene brecaparvovec)",
+      "application_id": "BLA125858",
+      "goal_date": "2026-08-23",
+      "reason": [
+        "Long-term durability and comparative hepatic and hypoglycemia event counts"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1515673/000119312526332802/rare-ex99_1.htm",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13529436/",
+        "https://www.fda.gov/media/194583/download"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-038",
+      "drug": "LEQEMBI IQLIK",
+      "application_id": "BLA761375",
+      "goal_date": "2026-08-24",
+      "reason": [
+        "Exact NCTs, exposure bridge and ARIA by subgroup"
+      ],
+      "sources": [
+        "https://www.globenewswire.com/news-release/2026/05/08/3290827/0/en/update-on-fda-priority-review-of-leqembi-iqlik-lecanemab-irmb-subcutaneous-injection-as-a-starting-dose-for-early-alzheimer-s-disease.html",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761375s001lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-039",
+      "drug": "Ziihera (zanidatamab-hrii) - (HERIZON-GEA-01)",
+      "application_id": "BLA761416",
+      "goal_date": "2026-08-25",
+      "reason": [
+        "S-003 is the biliary tract cancer update; first-line GEA requires separate S-002 reconciliation.",
+        "Regimen-specific efficacy, significance and safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1937653/000193765326000033/ex991q12026_earningsxrelea.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-zanidatamab-hrii-and-tislelizumab-jsgr-her2-positive-gastric-gastroesophageal-junction"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-040",
+      "drug": "Bictegravir and Lenacapavir - (ARTISTRY-2)",
+      "application_id": "NDA221104",
+      "goal_date": "2026-08-27",
+      "reason": [
+        "Arm-specific virologic failure and noninferiority margin, resistance and safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/882095/000088209526000022/exhibit991earningspressrel.htm",
+        "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=072a3c7e-33fb-4a87-ba21-3d8dad3f5c48&type=display",
+        "https://www.gilead.com/news/news-details/2026/u-s--fda-approves-gileads-bixlenvo-a-new-once-daily-single-tablet-option-for-virologically-suppressed-adults-with-hiv-including-those-on-complex-regimens?trk=test"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-041",
+      "drug": "BESREMI",
+      "application_id": "BLA761166",
+      "goal_date": "2026-08-30",
+      "reason": [
+        "Exact registry crosswalk and longer-term comparative risks.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://us.pharmaessentia.com/fda-confirms-a-pdufa-goal-date-of-august-30-2026-for-the-sbla-submission-of-ropeginterferon-alfa-2b-njft-in-essential-thrombocythemia-et/",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761166s013lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-042",
+      "drug": "Garetosmab - (OPTIMA)",
+      "application_id": "BLA761508",
+      "goal_date": "2026-08-19",
+      "reason": [
+        "Longer-term controlled clinical function and uncommon safety events",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000RiskR.pdf",
+        "https://pubmed.ncbi.nlm.nih.gov/42805227/"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-043",
+      "drug": "Pixclara (floretyrosine F 18; TLX101-Px)",
+      "application_id": "NDA218592",
+      "goal_date": "2026-09-11",
+      "reason": [
+        "Generalizability of reader agreement and precision of pediatric performance.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.globenewswire.com/news-release/2026/04/09/3271481/0/en/FDA-Accepts-NDA-for-TLX101-Px-Pixclara.html",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218592Orig1s000ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/218592Orig1s000OtherR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218592Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-045",
+      "drug": "Zidesamtinib (NVL-520) - (ARROS-1)",
+      "application_id": "NDA220185",
+      "goal_date": "2026-09-18",
+      "reason": [
+        "Verified numeric response and comparative safety context"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1861560/000186156026000020/nuvl-ex99_1.htm",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-zidesamtinib-ros1-positive-non-small-cell-lung-cancer"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-046",
+      "drug": "FAYUVI (rebisufligene etisparvovec-hopf; UX111 / ABO-102)",
+      "application_id": "BLA125845",
+      "goal_date": "2026-09-19",
+      "reason": [
+        "Long-term clinical and safety follow-up, exact clinical registry IDs and comparability of external controls"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1515673/000119312526139084/rare-20260402.htm",
+        "https://www.fda.gov/media/195731/download"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-047",
+      "drug": "WINREVAIR (sotatercept-csrk) - (HYPERION)",
+      "application_id": "BLA761363",
+      "goal_date": "2026-09-21",
+      "reason": [
+        "Component-specific precision and longer follow-up after early termination.",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/310158/000031015826000212/mrk-20260630.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761363s012s016s017lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-048",
+      "drug": "Zilganersen (ION373)",
+      "application_id": "NDA220210",
+      "goal_date": "2026-09-22",
+      "reason": [
+        "Exact study phase, smaller-dose and nonambulatory subgroup analysis, and adverse-event table.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/874015/000114036126029960/ef20078953_ex99-1.htm",
+        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=af6ca330-46d3-4ed6-b2af-bd6db3133fd1",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-050",
+      "drug": "Atebrioz (zilurgisertib)",
+      "application_id": "NDA221198",
+      "goal_date": "2026-09-26",
+      "reason": [
+        "Prespecified p-value, clinical-function follow-up, and safety rates.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000036/mirm-20260506xexx991.htm",
+        "https://content.govdelivery.com/accounts/USFDA/bulletins/42c900b",
+        "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000049/mirm-20260925.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221198Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-051",
+      "drug": "lirafugratinib",
+      "application_id": "NDA220425",
+      "goal_date": "2026-09-25",
+      "reason": [
+        "Controlled comparative efficacy and safety estimates",
+        "FDA notice explaining the difference between the two sponsor-disclosed goal dates",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://elevartx.com/2026/09/22/elevar-conditional-acceptance-lyrfigtu/",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable-locally-advanced-or-metastatic",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-052",
+      "drug": "Ameluz (aminolevulinic acid hydrochloride) with RhodoLED red light - sBCC",
+      "application_id": "NDA208081",
+      "goal_date": "2026-09-28",
+      "reason": [
+        "Exact prespecified test result, durability and comparative harms.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1858685/000149315226022875/ex99-1.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/208081s040lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-053",
+      "drug": "Brepocitinib - (VALOR)",
+      "application_id": "NDA220106",
+      "goal_date": "2026-08-28",
+      "reason": [
+        "Longer follow-up and precision for rare safety events",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000OtherR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220106Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-054",
+      "drug": "Oveporexton (TAK-861-2001)",
+      "application_id": "NDA220860",
+      "goal_date": "2026-08-10",
+      "reason": [
+        "Long-term controlled effects and precision in adults over 65",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-12/xhtml/FR-2026-11-12.html"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-055",
+      "drug": "Rusfertide - (REVIVE)",
+      "application_id": "NDA220605",
+      "goal_date": "2026-08-29",
+      "reason": [
+        "Long-term comparative effects on thrombosis and disease progression",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-056",
+      "drug": "ISEMBYLD (apitegromab-mstn) - (SAPPHIRE)",
+      "application_id": "BLA761463",
+      "goal_date": "2026-09-30",
+      "reason": [
+        "Effect estimates, subgroup analysis and comparative adverse events"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761463Orig1s000IntegratedR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-059",
+      "drug": "Tecentriq (atezolizumab) - adjuvant Stage III dMMR colon cancer",
+      "application_id": "BLA761034",
+      "goal_date": "2026-10-09",
+      "reason": [
+        "Long-term recurrence, survival and comparative safety"
+      ],
+      "sources": [
+        "https://www.gene.com/media/press-releases/15116/2026-06-10/fda-grants-priority-review-for-genentech",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-atezolizumab-combination-chemotherapy-stage-iii-mismatch-repair-deficient-colon-cancer"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-061",
+      "drug": "Enspryng (satralizumab) - thyroid eye disease",
+      "application_id": "BLA761149",
+      "goal_date": "2026-10-15",
+      "reason": [
+        "Comparative safety and interpretation of discordant pivotal results.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.gene.com/media/press-releases/15118/2026-06-29/fda-grants-priority-review-to-genentechs",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761149s008lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-062",
+      "drug": "Phentolamine ophthalmic solution 0.75%",
+      "application_id": "NDA217064",
+      "goal_date": "2026-10-17",
+      "reason": [
+        "Longer-term durability and uncommon safety events.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.globenewswire.com/news-release/2026/02/25/3244435/0/en/Opus-Genetics-Announces-FDA-Acceptance-of-Supplemental-New-Drug-Application-for-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia.html",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-063",
+      "drug": "Joenja (leniolisib) - paediatric APDS",
+      "application_id": "NDA217759",
+      "goal_date": "2026-10-24",
+      "reason": [
+        "Pediatric trial identity, quantitative immune response and safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1828316/000182831626000033/a2026hy1pressrelease.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217759Orig1s006ltr.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-064",
+      "drug": "Hibsago (bepirovirsen) - chronic hepatitis B",
+      "application_id": "NDA221276",
+      "goal_date": "2026-10-26",
+      "reason": [
+        "Longer-term recurrence and safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/874015/000114036126029960/ef20078953_ex99-1.htm",
+        "https://www.nejm.org/doi/10.1056/NEJMoa2515131",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221276Orig1s000lbl.pdf",
+        "https://us.gsk.com/en-us/media/press-releases/hibsago-bepirovirsen-approved-in-the-us-for-the-treatment-of-chronic-hepatitis-b-chb/"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-065",
+      "drug": "VOCERYQ (INO-3107) - recurrent respiratory papillomatosis",
+      "application_id": "BLA125825",
+      "goal_date": "2026-10-30",
+      "reason": [
+        "Trial NCT, baseline and follow-up procedure rates, treatment safety"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1055726/000119312525332322/d78035d8k.htm",
+        "https://www.fda.gov/vaccines-blood-biologics/cellular-gene-therapy-products/voceryq"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-068",
+      "drug": "Ivonescimab",
+      "application_id": "BLA761524",
+      "goal_date": "2026-11-14",
+      "reason": [
+        "Full SAP and original FDA correspondence"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/a2026_prx0129xfdablaacce.htm",
+        "https://pubmed.ncbi.nlm.nih.gov/42636833/",
+        "https://download.open.fda.gov/crl/CRL_BLA761524_20261113.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-069",
+      "drug": "IGALMI (dexmedetomidine sublingual film) - (SERENITY At-Home)",
+      "application_id": "NDA215390",
+      "goal_date": "2026-11-14",
+      "reason": [
+        "Public registry link for Study 3 and exact comparative efficacy analysis for the unsupervised setting.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1720893/000110465926061773/tm2614679d1_ex99-1.htm",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215390s003lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-070",
+      "drug": "Aficamten - (MAPLE-HCM)",
+      "application_id": "NDA219083",
+      "goal_date": "2026-11-14",
+      "reason": [
+        "Exact peak oxygen uptake effect and CI, and cardiac safety tables.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219083s002lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-073",
+      "drug": "Deramiocel (CAP-1002)",
+      "application_id": "BLA125842",
+      "goal_date": "2026-11-22",
+      "reason": [
+        "Effect-size and comparative safety verification",
+        "Final FDA inspection disposition",
+        "Final scope and terms of possible labeling",
+        "Reconcile FDA and sponsor methods and estimates of primary endpoint"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1133869/000110465926125150/capr-ex99d1.htm",
+        "https://www.sec.gov/Archives/edgar/data/1133869/000110465926125355/capr-20260930x10q.htm",
+        "https://www.fda.gov/media/193912/download",
+        "https://www.sec.gov/Archives/edgar/data/1133869/000110465926097294/capr-20260630x10q.htm"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-085",
+      "drug": "Relacorilant - (GRACE resubmission)",
+      "application_id": "NDA219398",
+      "goal_date": "2026-12-17",
+      "reason": [
+        "Full safety and FDA adjudication of global statistical test",
+        "Exact ClinicalTrials.gov identity not confirmed",
+        "Ticker attribution unverified or sponsor not publicly listed"
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1088856/000162828026050607/cort072926ex991pressrelease.htm",
+        "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf"
+      ],
+      "missing_required_fields": [
+        "trial_ids",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-086",
+      "drug": "Wilserdly (giredestrant) plus everolimus",
+      "application_id": "NDA220791",
+      "goal_date": "2026-12-18",
+      "reason": [
+        "Overall survival immature",
+        "Full review and CMC details"
+      ],
+      "sources": [
+        "https://www.gene.com/media/press-releases/15100/2026-02-19/fda-accepts-new-drug-application-for-gen",
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-giredestrant-combination-everolimus-er-positive-her2-negative-esr1-mutated-locally",
+        "https://www.roche.com/media/releases/med-cor-2026-11-16b"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-094",
+      "drug": "JUVMO (tavapadon)",
+      "application_id": "NDA220415",
+      "goal_date": "2026-09-25",
+      "reason": [
+        "Durability and uncommon harms beyond the controlled study periods",
+        "Calibrated numerical confidence unavailable",
+        "Resolve Study 2 p-value discrepancy between the FDA label narrative and table."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-097",
+      "drug": "Kresladi (marnetegragene autotemcel)",
+      "application_id": "BLA125806",
+      "goal_date": "2026-03-28",
+      "reason": [
+        "Confirmation of clinical benefit and long-term safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1281895/000114036125038030/ef20057000_ex99-1.htm",
+        "https://www.fda.gov/media/191993/download",
+        "https://www.fda.gov/media/191722/download"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-098",
+      "drug": "Avlayah (tividenofusp alfa)",
+      "application_id": "BLA761485",
+      "goal_date": "2026-04-05",
+      "reason": [
+        "Confirmatory clinical outcomes and long-term safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000RiskR.pdf",
+        "https://www.fda.gov/news-events/press-announcements/fda-approves-drug-treat-neurologic-manifestations-hunter-syndrome",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000IntegratedR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761485s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-100",
+      "drug": "Ambelvist (gadoquatrane)",
+      "application_id": "NDA219627",
+      "goal_date": "2026-06-12",
+      "reason": [
+        "Primary visualization estimates and full final label safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf"
+      ],
+      "missing_required_fields": [
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-101",
+      "drug": "Cypsedo (cipepofol)",
+      "application_id": "NDA220482",
+      "goal_date": "2026-05-30",
+      "reason": [
+        "Precision of uncommon safety events and generalizability to unstable patients.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-102",
+      "drug": "Zaynich (cefepime–zidebactam)",
+      "application_id": "NDA220787",
+      "goal_date": "2026-05-30",
+      "reason": [
+        "Precision in selected pathogen and renal-risk subgroups.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-103",
+      "drug": "Etcamah (camizestrant)",
+      "application_id": "NDA220359",
+      "goal_date": "2026-08-27",
+      "reason": [
+        "Confirmatory treatment-strategy and mature survival outcomes.",
+        "Whether a further exact goal amendment occurred between August 27 and the September 4 approval.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-104",
+      "drug": "Camzyos (mavacamten), pediatric oHCM",
+      "application_id": "NDA214998",
+      "goal_date": "2026-09-30",
+      "reason": [
+        "Longer follow-up and precision for uncommon pediatric harms.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-for-Priority-Review-Bristol-Myers-Squibbs-Supplemental-New-Drug-Application-for-Camzyos-mavacamten-to-Treat-Adolescents-with-Symptomatic-Obstructive-Hypertrophic-Cardiomyopathy-oHCM/default.aspx",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214998s013lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    }
+  ],
+  "outside_scope": [
+    {
+      "record_id": "2026-L1-026",
+      "drug": "Lipfendra (enlicitide decanoate)",
+      "application_id": "NDA220848",
+      "goal_date": "2027-02-22",
+      "reason": "The original NDA risk review lists February 22, 2027 as the PDUFA goal and July 13, 2026 as the review completion date.",
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000Approv.pdf"
+      ],
+      "applicability": "GOAL_OUTSIDE_2026"
+    },
+    {
+      "record_id": "2026-L1-071",
+      "drug": "TTFields therapy (Optune) - brain metastases from NSCLC",
+      "application_id": "",
+      "goal_date": "2026-11-15",
+      "reason": "Novocure’s SEC filing identifies a device PMA, with an FDA not-approvable letter on November 9. The lead is outside the NDA/BLA scope.",
+      "sources": [],
+      "applicability": "DEVICE_PMA_EXCLUDED"
+    },
+    {
+      "record_id": "2026-L1-099",
+      "drug": "Mitapivat (Pyrukynd)",
+      "application_id": "NDA216196",
+      "goal_date": "2027-02-01",
+      "reason": "SEC filing records an amendment extending the November 1, 2026 target to February 1, 2027.",
+      "sources": [],
+      "applicability": "GOAL_MOVED_OUTSIDE_2026"
+    }
+  ]
+}
