@@ -7,6 +7,9 @@ on:
       - 'scripts/blind_six_levels_2026.py'
       - 'scripts/report_blind_six_levels_2026.py'
       - 'scripts/score_scientific_backtest_2026.py'
+      - 'scripts/blind_scientific_2026.py'
+      - 'tests/test_blind_scientific_2026.py'
+      - 'new-platform/backend/app/scientific_levels_two_to_six.py'
       - 'tests/test_blind_six_levels_2026.py'
       - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
@@ -15,6 +18,9 @@ on:
       - 'scripts/blind_six_levels_2026.py'
       - 'scripts/report_blind_six_levels_2026.py'
       - 'scripts/score_scientific_backtest_2026.py'
+      - 'scripts/blind_scientific_2026.py'
+      - 'tests/test_blind_scientific_2026.py'
+      - 'new-platform/backend/app/scientific_levels_two_to_six.py'
       - 'tests/test_blind_six_levels_2026.py'
       - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
@@ -33,3 +39,4 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
           python -m unittest discover -s tests -p 'test_report_blind_six_levels_2026.py' -v
+          python -m unittest discover -s tests -p 'test_blind_scientific_2026.py' -v
