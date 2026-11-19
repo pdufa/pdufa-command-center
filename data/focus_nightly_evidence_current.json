@@ -2,13 +2,13 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-18",
+  "pacificDate": "2026-11-19",
   "reassessmentQueue": [
     {
       "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "svra-molgramostim",
+      "cycleId": "cogt-gist",
       "ncts": [
-        "NCT04544293"
+        "NCT05208047"
       ],
       "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
     }
@@ -22,8 +22,8 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-17",
-  "runAtUTC": "2026-11-18T15:33:07.964016+00:00",
+  "rosterSnapshotAsOf": "2026-11-18",
+  "runAtUTC": "2026-11-19T15:39:57.652763+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
@@ -125,7 +125,7 @@
       ],
       "calibratedProbability": null,
       "company": "Savara Inc.",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -359,7 +359,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cogent Biosciences, Inc.",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -374,7 +374,7 @@
       "registryStatus": "RECRUITING",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "9c11e64422fd8c1b171addca7ae57abb53891ea0c53f895010250cf461f38990",
+      "sourceHash": "f180a62e04a526d795cf32b8334cad5b248edf70ef6eaae5acce20f02b71318a",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05208047",
       "ticker": "COGT"
