@@ -1,0 +1,29 @@
+name: Regenerate Level 1-6 assessment evidence artifact
+on:
+  push:
+    branches: [feature/2026-blind-l1-183-backtest]
+    paths:
+      - '.github/workflows/regenerate-level16-evidence.yml'
+      - 'scripts/medical/export_level16_assessment_evidence.py'
+      - 'reports/scientific-levels1-6/**'
+permissions:
+  contents: read
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate Level 1-6 evidence from retained sources
+        run: |
+          python scripts/medical/export_level16_assessment_evidence.py
+          python -m json.tool new-platform/frontend/data/level16AssessmentEvidence.json > /dev/null
+      - name: Upload generated evidence for review (no commit or deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: level16-regenerated-evidence
+          path: new-platform/frontend/data/level16AssessmentEvidence.json
+          retention-days: 7
