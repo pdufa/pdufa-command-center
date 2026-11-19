@@ -55,6 +55,11 @@ jobs:
           import json
           from pathlib import Path
           report = json.loads(Path("artifacts/avenue1/collection-status.json").read_text())
+          inventory = json.loads(Path("artifacts/avenue1/pool-source-inventory.json").read_text())
+          assert inventory["nct_count"] == report["pool_nct_count"], "POOL inventory count mismatch"
+          assert inventory["source_sha256"] == report["pool_source_sha256"], "POOL source digest mismatch"
+          assert len(inventory["ncts"]) == inventory["nct_count"], "POOL NCT inventory mismatch"
+          assert len(set(inventory["ncts"])) == inventory["nct_count"], "Duplicate POOL NCT inventory"
           assert report["attempted"] > 0, "No trials attempted"
           assert report["collected"] + report["error_count"] == report["attempted"], "Collection count mismatch"
           assert report["coverage_percent"] == round(100 * report["collected"] / report["attempted"], 2), "Coverage calculation mismatch"
