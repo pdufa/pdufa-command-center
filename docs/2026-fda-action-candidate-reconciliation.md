@@ -69,3 +69,38 @@ Outcome-team sources are the [openFDA download manifest](https://api.fda.gov/dow
 [CBER noteworthy BLA supplements](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-supplement-noteworthy-approvals),
 [versioned timing sample](https://www.pdufa.bio/research/fda-decision-timing/fda-decision-timing-2026-v41.csv),
 and [publisher decisions page](https://www.pdufa.bio/decisions/2026).
+
+## Review of the timing subset and outstanding records
+
+The timing CSV overlaps 41 of the publisher's 179 distinct decision pages.
+The branch's first 38 discovery IDs are preserved and the three additional
+records have IDs 039 through 041. The outcome-team crosswalk records a primary
+FDA source and a separate primary goal-date source for each. The team manually
+cross-checked publisher linkage against FDA letters, agency communications,
+the Drugs@FDA submission record and contemporaneous sponsor disclosures.
+Several links in the discovery CSV were replaced after that check.
+
+- 39 of 41 timing rows have a source-corroborated application, indication,
+  sponsor, goal and FDA action. This count applies only to the timing subset.
+  The eligible study denominator still needs reconciliation. The metadata
+  handoff is for predecision research and does not establish evaluator
+  blindness.
+- PDUFA26-TIMING-027 has a documented resubmission and a reported review
+  goal. Verify that this date was the first assigned goal of that review cycle.
+- PDUFA26-TIMING-033 has a program-level goal and more than one application-level
+  action. Determine which applications had independent target dates before
+  assigning distinct eligible events.
+- PDUFA26-ARCHIVE-001 through PDUFA26-ARCHIVE-138 identify the decision pages
+  outside the curated timing study. Each needs indication, FDA application
+  and submission ID, action date and goal-date corroboration. The exact
+  source-key crosswalk is held in outcome quarantine.
+- The official-source queue has 290 Drugs@FDA candidate keys and 36 published
+  letter keys absent from the curated timing crosswalk, plus the one
+  under-release letter record. These can overlap the 138 discovery records.
+  The outcome-team queue numbers them as PDUFA26-DRUGS-001 through -290,
+  PDUFA26-LETTERS-001 through -036 and PDUFA26-SOURCE-001. Match each across
+  sources by application, indication, review cycle and action date before
+  counting it. The under-release record depends on FDA disclosure.
+- CBER originals and clinically relevant supplements that do not occur in the
+  Drugs@FDA export need a complete separate intake. Close this coverage gap
+  before claiming a comprehensive 2026 universe.
