@@ -36,8 +36,18 @@ The export requires `--level7-db`, does not run by default, and is not a primary
 From repository root:
 
 ```bash
+python scripts/collect_level7_focus_registry.py --development-db /secure/path/level7-evidence.sqlite3
 python scripts/level7_focus_report.py --db /secure/path/level7-evidence.sqlite3 --output /secure/path/focus-level7-report.json
 ```
+
+The development collector reads the packaged roster and requests the official
+ClinicalTrials.gov record for each exact NCT. SQLite retains the source receipt
+and original response bytes together. The collector verifies the digest and
+exact NCT on readback and exits nonzero if any trial lacks a verified capture.
+Registry verification establishes origin, identity and capture integrity.
+Clinical claims remain sponsor-reported, and a single publisher leaves Level 8
+evidence readiness incomplete. The collector writes only to the explicit
+development SQLite path outside the repository.
 
 Configure the **server-only** environment variable for the Next.js frontend:
 
