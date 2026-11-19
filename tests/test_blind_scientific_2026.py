@@ -59,7 +59,7 @@ class HistoricalScientificExecutionTests(unittest.TestCase):
             "registry": {
                 "document": document,
                 "documentSha256": engine.canonical_digest(document),
-                "sourceVersionUrl": f"https://clinicaltrials.gov/api/v2/studies/{nct}",
+                "sourceVersionUrl": f"https://clinicaltrials.gov/study/{nct}?tab=history&a=1",
                 "sourceVersionDate": "2026-02-01",
                 "sourceRetrievedAt": "2026-05-02",
             },
@@ -129,6 +129,13 @@ class HistoricalScientificExecutionTests(unittest.TestCase):
         self.package["outcome_exposure"] = "OUTCOME_UNEXPOSED"
         self.package["trials"][0]["registry"]["document"]["actualOutcome"] = "APPROVE"
         with self.assertRaisesRegex(ValueError, "Outcome-bearing evidence field"):
+            self.lock()
+
+    def test_latest_registry_endpoint_cannot_supply_a_post_cutoff_capture(self):
+        self.package["trials"][0]["registry"]["sourceVersionUrl"] = (
+            f"https://clinicaltrials.gov/api/v2/studies/{self.nct}"
+        )
+        with self.assertRaisesRegex(ValueError, "pinned registry revision"):
             self.lock()
 
     def test_registry_identity_and_evidence_versions_must_match_cutoff(self):

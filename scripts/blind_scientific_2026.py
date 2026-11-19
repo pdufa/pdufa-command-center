@@ -116,12 +116,13 @@ def validate_registry(record, nct, cutoff):
     api = f"/api/v2/studies/{nct}"
     history = f"/study/{nct}"
     query = parse_qs(locator.query)
+    pinned_revision = (
+        locator.path == history and query.get("tab") == ["history"]
+        and len(query.get("a", [])) == 1 and query["a"][0].isascii()
+        and query["a"][0].isdigit()
+    )
     if (locator.hostname not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}
-            or not (locator.path == api or (
-                locator.path == history and query.get("tab") == ["history"]
-                and len(query.get("a", [])) == 1 and query["a"][0].isascii()
-                and query["a"][0].isdigit()
-            ))):
+            or not (locator.path == api or pinned_revision)):
         raise ValueError("Registry locator is not an exact official trial version")
     document = record["document"]
     if canonical_digest(document) != record["documentSha256"]:
@@ -136,6 +137,8 @@ def validate_registry(record, nct, cutoff):
     if (metadata_date != version_date or not version_date <= cutoff
             or not version_date <= retrieval_date <= date.today()):
         raise ValueError("Registry version is not eligible at the historical cutoff")
+    if retrieval_date > cutoff and not pinned_revision:
+        raise ValueError("Post-cutoff retrieval requires a pinned registry revision")
     return {
         "nct_id": nct,
         "last_update_posted": {"date": version_date.isoformat()},
