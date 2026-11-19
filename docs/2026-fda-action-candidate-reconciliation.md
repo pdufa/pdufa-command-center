@@ -80,18 +80,20 @@ cross-checked publisher linkage against FDA letters, agency communications,
 the Drugs@FDA submission record and contemporaneous sponsor disclosures.
 Several links in the discovery CSV were replaced after that check.
 
-- 39 of 41 timing rows have a source-corroborated application, indication,
+- 40 of 41 timing rows have a source-corroborated application, indication,
   sponsor, goal and FDA action. This count applies only to the timing subset.
   The eligible study denominator still needs reconciliation. The metadata
   handoff is for predecision research and does not establish evaluator
   blindness.
-- PDUFA26-TIMING-027 has a documented resubmission and a reported review
-  goal. Verify that this date was the first assigned goal of that review cycle.
+- PDUFA26-TIMING-027 has a documented Class 2 resubmission. The sponsor corrected
+  its date in a January 29 update. The corrected June 29 goal is the one
+  retained in the crosswalk.
 - PDUFA26-TIMING-033 has a program-level goal and more than one application-level
   action. Determine which applications had independent target dates before
   assigning distinct eligible events.
 - PDUFA26-ARCHIVE-001 through PDUFA26-ARCHIVE-138 identify the decision pages
-  outside the curated timing study. Each needs indication, FDA application
+  outside the curated timing study. IDs 110 and 114 were reconciled in the
+  separate CBER intake below. The remaining 136 need indication, FDA application
   and submission ID, action date and goal-date corroboration. The exact
   source-key crosswalk is held in outcome quarantine.
 - The official-source queue has 290 Drugs@FDA candidate keys and 36 published
@@ -101,6 +103,16 @@ Several links in the discovery CSV were replaced after that check.
   PDUFA26-LETTERS-001 through -036 and PDUFA26-SOURCE-001. Match each across
   sources by application, indication, review cycle and action date before
   counting it. The under-release record depends on FDA disclosure.
-- CBER originals and clinically relevant supplements that do not occur in the
-  Drugs@FDA export need a complete separate intake. Close this coverage gap
-  before claiming a comprehensive 2026 universe.
+- The CBER original BLA table had 10 rows through September 17. Four were in
+  the timing crosswalk. Three additional therapeutic applications were
+  reconciled as PDUFA26-CBER-001 through -003, of which -002 and -003 resolve
+  archive IDs 114 and 110. The third is outside the 179-page discovery index.
+  Keep the original and amended goal separately for the extension, and the
+  voucher action and PDUFA goal separately for the accelerated review. The
+  table also had three rows for plasma or assays that need eligibility review.
+  The updated CBER product and supplement indexes need separate intake for
+  later actions and for clinically relevant supplements.
+
+These batches have 43 source-corroborated records and one program grouping
+issue, across 44 distinct records reviewed. The counts still describe a
+source-defined subset.
