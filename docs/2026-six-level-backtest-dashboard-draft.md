@@ -15,3 +15,11 @@ The score command validates the independently retained digest before opening the
 The aggregate has `level`, `events`, `predicted`, `abstained`, `correct`, `incorrect`, `coverage`, `accuracy`, `accuracy_ci95_wilson_low`, `accuracy_ci95_wilson_high`, the always-approve comparisons, six actual/predicted cross-tab counts, `protocol`, `rule_set`, and `lock_sha256`. Interpret accuracy and its interval over answered cases and coverage over eligible cases. Display null accuracy and intervals as unavailable. Report the actual reconciled cohort denominator and label 196 only as the requested target. Treat nonbinary actions as explicit ledger exclusions.
 
 Before any future wiring, require a reconciled eligible FDA decision cohort and a report whose scientific assessment family, prediction protocol, and lock receipt match the independently verified run. Validate all six rows and check that counts balance. The aggregate must identify `CANONICAL_HISTORICAL_FDA_DIRECTION_V1` and `SCIENTIFIC_L01_L06_HISTORICAL_DIRECTION_V1`. The branch's experimental gate baseline and prior outcome-aware examples are outside the installed scientific Levels 1–6 accuracy display. Preserve the existing historical charts and active dashboards while the cohort and forecasting rules are still under development.
+
+The detached `new-platform/frontend/app/HistoricalScientificBacktest.tsx`
+component accepts the approved cohort label, eligible count, independently
+retained receipt digest, and canonical aggregate rows. Its `surface` prop
+selects the FOCUS link, PAST cohort summary, or ASSESSMENTS metrics table.
+It is ready for these three integration points after verification of an eligible
+study. It uses no requests and imports no data. Keep case-level evidence and
+outcomes outside the component props.
