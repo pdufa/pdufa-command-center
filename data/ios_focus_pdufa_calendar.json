@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-18T15:56:50Z",
+  "generatedAt": "2026-11-19T16:01:40Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 488980000,
+      "marketCapUsd": 466880000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
@@ -32,7 +32,7 @@
       "ticker": "SVRA",
       "company": "Savara Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 985083977,
+      "marketCapUsd": 988393329,
       "id": "focus-svra-nct04544293",
       "ncts": [
         "NCT04544293"
@@ -130,7 +130,7 @@
       "ticker": "SRPT",
       "company": "Sarepta Therapeutics, Inc.",
       "date": "2027-02-28",
-      "marketCapUsd": 1622478380,
+      "marketCapUsd": 1583873475,
       "id": "focus-srpt-nct02500381",
       "ncts": [
         "NCT02500381"
@@ -142,7 +142,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2270000000,
+      "marketCapUsd": 2230000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
