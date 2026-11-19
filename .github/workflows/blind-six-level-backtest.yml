@@ -1,0 +1,27 @@
+name: Blind six-level backtest checks
+on:
+  push:
+    branches:
+      - feature/2026-blind-l1-183-backtest
+    paths:
+      - 'scripts/blind_six_levels_2026.py'
+      - 'tests/test_blind_six_levels_2026.py'
+      - '.github/workflows/blind-six-level-backtest.yml'
+  pull_request:
+    paths:
+      - 'scripts/blind_six_levels_2026.py'
+      - 'tests/test_blind_six_levels_2026.py'
+      - '.github/workflows/blind-six-level-backtest.yml'
+permissions:
+  contents: read
+jobs:
+  blind-backtest-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run six-level blind-backtest regression tests
+        run: python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
