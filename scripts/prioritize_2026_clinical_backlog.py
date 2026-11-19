@@ -48,7 +48,7 @@ def main():
     output=Path(args.output)
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open("w",newline="",encoding="utf-8") as f:
-        w=csv.DictWriter(f,fieldnames=list(queue[0]))
+        w=csv.DictWriter(f,fieldnames=list(queue[0]),quoting=csv.QUOTE_ALL,lineterminator='\n')
         w.writeheader()
         w.writerows(queue)
     print(f"Prioritized {len(queue)} case records; none certified blind-lock-ready")
