@@ -16,11 +16,11 @@ def prioritize(rows):
     output=[]
     for row in rows:
         undated=number(row.get("undated_leads"))
-        exposed=(row.get("researcher_outcome_exposure") or "").upper() == "OBSERVED"
+        exposed=(row.get("researcher_outcome_exposure") or "").upper() in {"OBSERVED", "POTENTIAL"}
         dated=number(row.get("dated_provisional_claims"))
         if exposed:
             priority=1
-            next_action="Assign new outcome-unexposed reviewer; quarantine prior evidence"
+            next_action="Verify exposure and assign outcome-unexposed reviewer; quarantine contaminated evidence"
         elif undated:
             priority=2
             next_action="Find contemporaneous dated archived source and verify revision"
