@@ -72,3 +72,77 @@ All 13 visible PR-triggered workflows reported success at the baseline SHA.
 - Prediction versions retained
 - FOCUS, PAST, POOL, ASSESSMENTS regression checked where applicable
 - Reviewed without merging or deploying
+
+## Verified development milestone
+
+Implementation commit `bc7128575dd16379ec27e3878e70cdd42797b76f`.
+Verified acceptance is **73.2%** (1,025 of 1,400 checklist points).
+Applying the baseline weights, all 14 levels passed their automated tests,
+local runtime integration, and exact 32-trial reconciliation. Levels 7–13
+earned the method gate. Level 7 earned the remaining evidence gate by
+capturing and verifying each original registry response and serving the
+resulting coverage report in a local browser. The other levels have open
+evidence gates or incomplete scientific methods.
+
+| Level | Verified % | Demonstrated functionality and remaining gate |
+|---|---:|---|
+| 7 | 100 | Official registry capture, provenance, raw digest readback and coverage display for all 32. |
+| 8 | 90 | Exact identity and readiness checks. All 32 lack corroborating publisher receipts in the development store. |
+| 9 | 90 | Phase, indication and population documented for all 32. Confirmatory role needs original supporting evidence. |
+| 10 | 90 | Twelve posted primary readouts matched registered endpoint labels and windows. Resolve missing and incomplete comparisons before scoring. |
+| 11 | 90 | Twelve posted safety readouts supported participant-count checks. Exposure, follow-up and comparator gaps remain. |
+| 12 | 90 | Eight trials had reported primary analyses with consistent intervals. Eleven original SAPs supplied methods passages. One combined protocol and SAP exceeds the 16 MB retrieval limit. Confirm prespecification and execution from original records. |
+| 13 | 90 | Registered populations checked for all 32. One original protocol supplied standard-of-care and unmet-need passages. Subgroup effects and broader indication-specific evidence remain unresolved. |
+| 14 | 55 | Exact application, cycle and indication receipt validation. Verified FDA receipts for the cohort and automated sourcing remain pending. |
+| 15 | 55 | CMC source checks distinguish gaps from documented findings. Required exact-cycle manufacturing and inspection evidence remains unavailable. |
+| 16 | 55 | Advisory committee and exception source checks retain conflicts. Exact-cycle corroboration remains pending. |
+| 17 | 55 | Registry lead-sponsor attribution retained. Program-specific rights and execution evidence remain pending. |
+| 18 | 55 | Independent immutable predictions and abstention explanations. A validated FDA model and calibrated uncertainty are required for any numerical forecast. |
+| 19 | 55 | Cutoff isolation and separate comparison of locked forecasts and adjudicated outcomes tested. No eligible real blind scored cohort has been established. |
+| 20 | 55 | Local dashboard, history, sorting and reassessment replay verified. Full evidence readiness and out-of-sample predictive validation remain open. |
+
+### Reproduce in development
+
+Use an explicit local SQLite destination outside the repository. The
+capture command saves original public registry response bytes. The validation
+command reads those bytes and uses a separate SQLite ledger for assessment jobs
+and immutable results.
+
+```sh
+PYTHONPATH=. python scripts/collect_level7_focus_registry.py --development-db /path/to/dev/level7.sqlite3
+python scripts/level7_focus_report.py --db /path/to/dev/level7.sqlite3 --output /path/to/dev/focus-level7-report.json
+python scripts/validate_extended_focus.py --evidence-db /path/to/dev/level7.sqlite3 --results-db /path/to/dev/assessments.sqlite3
+```
+
+The authenticated workbench exposes these levels when the frontend is built with
+`NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS=1`. The backend gate requires
+`PDUFA_EXTENDED_ASSESSMENTS=1` and an isolated development
+`PDUFA_ASSESSMENT_SCHEMA` whose name begins with `dev_`. Point the existing
+authenticated assessment relay at that development backend. The Level 7 FOCUS
+coverage panel reads the separate file configured with
+`FOCUS_LEVEL7_COVERAGE_REPORT_PATH`. Hosted runtime configuration and production
+activation were outside this verification.
+
+An archived nightly monitor report includes an extended queue only for new or
+changed verified registry evidence. Pass it to the validation command with
+`--queue-report` to process matching locally retained evidence. The queue is
+keyed by exact NCT, level and source digest. A second replay of the same
+32-item queue left 448 saved results and 448 jobs with zero predictions
+scored. The scheduled scan has no automatic prediction publishing path.
+
+The 32-trial registry-only run persisted 448 assessments, all
+`ABSTAIN` / `NOT_SCORED`. Chromium verified all 32 Level 7 coverage rows,
+unavailable/corrupt report handling, FOCUS exact-NCT sorting and authenticated
+Levels 7 and 20 execution through the frontend relay. The workbench reloaded
+saved versions and sorted them by level. Historical tests verify pre-cutoff
+selection and rejection of outcome leakage. The real registry capture was
+current evidence and supplied zero eligible blind forecasts.
+
+### Verification
+
+- Backend: 1,444 passed, 2 skipped, plus 36 passing subtests.
+- Repository regressions: 2,320 passed, 195 skipped, plus 1,095 passing subtests.
+- Frontend: 172 test files passed. TypeScript checking and the production build passed locally.
+- FOCUS alignment and read-only evidence preflight passed. The retirement audit found zero active retired dependencies.
+- GitHub Actions: 13 of 13 reported PR-triggered workflows passed at the implementation commit.
+- The canonical November 18 FOCUS snapshot resolved the PR conflict. All 32 trial identities and evidence fields were preserved. The differing record fields were market capitalizations.
