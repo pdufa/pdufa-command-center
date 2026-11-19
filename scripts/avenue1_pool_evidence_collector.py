@@ -5,6 +5,7 @@ Requires PDUFA_API_BASE_URL and PDUFA_INTERNAL_API_KEY. Does not alter POOL,
 FOCUS, prediction scores, or production databases. Output is local JSONL.
 """
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -134,8 +135,11 @@ def main():
         raise RuntimeError("No exact NCT identifiers in authenticated POOL source; schema review required")
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
+    source_digest = hashlib.sha256(json.dumps(raw, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
     (out / "pool-source-inventory.json").write_text(json.dumps({
         "nct_count": len(ids), "ncts": ids, "source": "authenticated backend /api/workspace",
+        "source_sha256": source_digest,
+        "source_as_of": raw.get("asOf"),
         "as_of": datetime.now(timezone.utc).isoformat()
     }, indent=2))
     trial_metadata = {row["id"].split("|", 1)[1]: row for row in raw["pipeline"]
@@ -175,6 +179,7 @@ def main():
     attempted = min(len(ids), args.limit) if args.limit else len(ids)
     (out / "collection-status.json").write_text(json.dumps({
         "pool_nct_count": len(ids),
+        "pool_source_sha256": source_digest,
         "attempted": attempted,
         "collected": done,
         "error_count": len(errors),
