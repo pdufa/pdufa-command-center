@@ -162,3 +162,38 @@ exposure follow from this source subset.
 The sponsor assigned one August 27, 2026 priority-review goal to its single-tablet combination NDA. The FDA parent application record identifies that regimen as NDA221104, original submission 1. Keep one source-corroborated timing record for that submission. The separate NDA221443 starter-pack record has a different filing identity, and its FDA correction retained the original action date. The available program goal source names the combination NDA. The starter-pack original and supplement remain in the separate-source queue pending their own goal-date corroboration, and are excluded from this timing row. The FDA action documents are retained in the outcome workspace. [Sponsor priority-review announcement](https://www.gilead.com/news/news-details/2026/u-s--fda-grants-priority-review-of-new-drug-application-for-gileads-once-daily-hiv-treatment-of-bictegravir-plus-lenacapavir)
 
 The reviewed subset now has 53 source-corroborated timing and FDA action records. The study-wide eligible denominator remains open.
+
+## Published-letter crosswalk, batch 2
+
+The outcome team corroborated seven additional review cycles with the
+official FDA letters and exact dates from contemporaneous original sponsor
+goal sources. The rows are PDUFA26-LETTERS-001, -004, -012, -021, -024,
+-029 and -032. Three link to publisher records PDUFA26-ARCHIVE-018, -117
+and -118. All seven use the FDA action date. The later publisher or sponsor
+announcement date was retained separately where present in the publisher
+snapshot.
+
+- PDUFA26-LETTERS-004 has a 2025 original goal, a 2026 revised goal and an
+  independently documented 2026 action. The action-date window therefore
+  includes the event.
+- PDUFA26-LETTERS-012 and PDUFA26-TIMING-038 are distinct cycles of the same
+  BLA. Their FDA letters identify separate resubmissions and original target
+  dates for those cycles.
+- PDUFA26-LETTERS-028 is a separate action on a paired application for
+  PDUFA26-LETTERS-029. The sponsor explicitly documents an exact goal day for
+  the NDA and confirms concurrent submission of the BLA. The exact target
+  day is still unverified for the BLA, so the ledger keeps that action
+  provisional.
+- The TIMING-020 cycle label now specifies a Class 2 resubmission, consistent
+  with the contemporaneous sponsor filing.
+
+This batch adds seven cases to the prior source-corroborated set. The
+publisher queue now has 123 open rows. The official published-letter queue
+has 20 open rows, including the paired application. The official approval
+candidate queue still has 289 open rows and the under-release letter remains
+open. These queues overlap and cannot be summed into a study census.
+
+The exact crosswalk, primary source links and action records remain in the
+restricted workspace. The separate metadata handoff carries only
+source-corroborated review-cycle identities and dates, and omits actual
+outcome fields and links.
