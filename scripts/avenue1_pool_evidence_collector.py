@@ -158,6 +158,7 @@ def main():
                 evidence = study_evidence(nct)
                 evidence["pool_record"] = trial_metadata[nct]
                 evidence["pool_source_as_of"] = raw.get("asOf")
+                evidence["pool_source_sha256"] = source_digest
                 dimensions = evidence["clinical_dimensions"]
                 missing = []
                 for name, value in dimensions.items():
