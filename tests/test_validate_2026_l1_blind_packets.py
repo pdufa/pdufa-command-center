@@ -35,6 +35,18 @@ class ProvenanceGateTests(unittest.TestCase):
         self.assertEqual(module.inspect_packet(packet(source_content_hashes="not-a-hash")),
                          "BLOCKED_INVALID_SOURCE_HASH")
 
+    def test_malformed_cutoff_is_blocked(self):
+        self.assertEqual(module.inspect_packet(packet(predecision_evidence_cutoff="unknown")),
+                         "BLOCKED_INVALID_SOURCE_DATE")
+
+    def test_malformed_publication_date_is_blocked(self):
+        self.assertEqual(module.inspect_packet(packet(source_publication_dates="2025-99-99")),
+                         "BLOCKED_INVALID_SOURCE_DATE")
+
+    def test_invalid_source_url_is_blocked(self):
+        self.assertEqual(module.inspect_packet(packet(historical_source_urls="not-a-url")),
+                         "BLOCKED_INVALID_SOURCE_URL")
+
     def test_source_count_mismatch_is_blocked(self):
         self.assertEqual(module.inspect_packet(packet(
             historical_source_urls="https://example.org/a;https://example.org/b")),
