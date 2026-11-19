@@ -21,3 +21,13 @@ An external retrieval of https://pubmed.ncbi.nlm.nih.gov/37432430/ on 2026-11-19
 5. Record independent reviewer non-exposure attestation, freeze source manifest, complete six-level assessment, then lock before outcome unblinding.
 
 **Decision:** SOURCE_AUTHENTICATION_BLOCKED. This does not negate the existing provisional review, but it cannot advance to a verified or scored blind prediction. Aggregate preliminary narrative count stays **22/89 candidate events, 132 level narratives**; full-year denominator remains unverified.
+
+
+---
+## UPDATE — 2026-11-19: SOURCE RETRIEVAL SUCCESSFUL
+
+**This update supersedes the earlier SOURCE_AUTHENTICATION_BLOCKED result for the ORCA-2 journal abstract only.** PubMed PMID 37432430 is now directly accessible and the original JAMA article's abstract, publication date and trial registration have been checked: https://pubmed.ncbi.nlm.nih.gov/37432430/ (JAMA 2023 Jul 11;330(2):152–160; DOI 10.1001/jama.2023.10042; NCT04576949). This is a pre-cutoff publication.
+
+**Independently confirmed from PubMed:** randomized, three-group, double-blind, placebo-controlled trial at 17 US sites; 810 adults, randomized to 12-week cytisinicline (n=270), 6-week cytisinicline then placebo (n=269), or placebo (n=271), all with behavioral support. The 12-week treatment's biochemically verified continuous abstinence in weeks 9–12 was 32.6% versus 7.0% (OR 6.3, 95% CI 3.7–11.6, P<0.001). Sustained abstinence in weeks 9–24 was 21.1% versus 4.8% (OR 5.3, 95% CI 2.8–11.1, P<0.001). The six-week arm's weeks 3–6 abstinence was 25.3% versus 4.4% (OR 8.0, 95% CI 3.9–16.3, P<0.001). Sixteen cytisinicline recipients (2.9%) discontinued because of adverse events, and the abstract reports no drug-related serious adverse events.
+
+**Verified scope:** Original journal abstract/date, study registration and the figures above. **Still unverified:** full protocol and article tables, companion pivotal trial, NDA218995 and precise original review-cycle linkage, source-version archive, and outcome-unexposed reviewer attestation. This publication authentication does **not** authorize a directional FDA prediction, prediction lock, or accuracy score. Existing preliminary narrative coverage remains 22/89 candidates and 132 level narratives.
