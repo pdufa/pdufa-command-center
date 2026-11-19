@@ -149,6 +149,30 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(result["clinical_dimensions"]["standard_of_care_comparator"], [])
         self.assertEqual(result["clinical_dimensions"]["evidence_quality"]["references"], [])
 
+    def test_inventory_and_status_share_stable_source_digest(self):
+        from scripts.avenue1_pool_evidence_collector import main
+        import hashlib
+        snapshot = {
+            "asOf": "2026-11-18",
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 1,
+                "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 1}},
+            "pipeline": [{"id": "TRIAL|NCT05507203"}],
+        }
+        expected = hashlib.sha256(
+            json.dumps(snapshot, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("scripts.avenue1_pool_evidence_collector.pool_records", return_value=snapshot), \
+                 patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value={}), \
+                 patch("scripts.avenue1_pool_evidence_collector.time.sleep"), \
+                 patch.object(sys, "argv", ["collector", "--output-dir", directory]):
+                self.assertEqual(main(), 0)
+            inventory = json.loads((Path(directory) / "pool-source-inventory.json").read_text())
+            status = json.loads((Path(directory) / "collection-status.json").read_text())
+            self.assertEqual(inventory["source_sha256"], expected)
+            self.assertEqual(status["pool_source_sha256"], expected)
+            self.assertEqual(inventory["source_as_of"], "2026-11-18")
+
     def test_collection_partial_failure_does_not_claim_completion(self):
         from scripts.avenue1_pool_evidence_collector import main
         snapshot = {
