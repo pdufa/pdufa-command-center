@@ -172,6 +172,8 @@ class CollectorTests(unittest.TestCase):
             self.assertEqual(inventory["source_sha256"], expected)
             self.assertEqual(status["pool_source_sha256"], expected)
             self.assertEqual(inventory["source_as_of"], "2026-11-18")
+            evidence = json.loads((Path(directory) / "clinical-evidence.jsonl").read_text().strip())
+            self.assertEqual(evidence["pool_source_sha256"], expected)
 
     def test_collection_partial_failure_does_not_claim_completion(self):
         from scripts.avenue1_pool_evidence_collector import main
