@@ -23,3 +23,7 @@ selects the FOCUS link, PAST cohort summary, or ASSESSMENTS metrics table.
 It is ready for these three integration points after verification of an eligible
 study. It uses no requests and imports no data. Keep case-level evidence and
 outcomes outside the component props.
+
+## Verified pilot integration
+
+POOL and FOCUS link to the pilot cohort on PAST. PAST labels its one-case scope and links to the six rows on ASSESSMENTS. The only data imported by those routes are the receipt-bound coverage and accuracy fields for this pilot. The FDA outcome, case-level export and outcome-conditioned confusion cells remain quarantined.

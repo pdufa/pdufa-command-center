@@ -70,16 +70,16 @@ export default function HistoricalScientificBacktest({
   surface,
   evaluation,
 }: {
-  surface: "FOCUS" | "PAST" | "ASSESSMENTS";
+  surface: "POOL" | "FOCUS" | "PAST" | "ASSESSMENTS";
   evaluation?: VerifiedEvaluation;
 }) {
   const rows = evaluation ? reportRows(evaluation) : null;
   return <section className="panel" id="historical-fda-backtest" aria-labelledby="historical-fda-backtest-title">
     <h2 id="historical-fda-backtest-title">2026 historical FDA backtest</h2>
     {rows && evaluation
-      ? <p>{evaluation.cohortLabel} · {evaluation.eligibleEvents} eligible FDA actions</p>
+      ? <p>{evaluation.cohortLabel} · {evaluation.eligibleEvents} eligible FDA {evaluation.eligibleEvents === 1 ? "action" : "actions"}</p>
       : <p>Verified historical accuracy is unavailable.</p>}
-    {surface === "FOCUS" && <p><a href="/past#historical-fda-backtest">View historical cohort on PAST</a></p>}
+    {(surface === "POOL" || surface === "FOCUS") && <p><a href="/past#historical-fda-backtest">View historical cohort on PAST</a></p>}
     {surface === "PAST" && rows && <p><a href="/assessments#historical-fda-backtest">View level results on ASSESSMENTS</a></p>}
     {surface === "ASSESSMENTS" && rows && <div style={{overflowX:"auto"}}>
       <table>

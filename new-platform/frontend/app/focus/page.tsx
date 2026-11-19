@@ -1,4 +1,6 @@
 "use client";
+import HistoricalScientificBacktest from "../HistoricalScientificBacktest";
+import historicalPilot from "../../data/historicalScientificPilot2026.json";
 import FocusSavedAssessments from "../FocusSavedAssessments";
 import {FocusLevelHeaders,FocusLevelSubheaders,FocusLevelCells,type FocusTrialLevels} from '../FocusLevelColumns';
 import {FocusOverallHeaders,FocusOverviewCells,FocusTwentyHeaders,FocusTwentyCells} from '../FocusOverallLevelMatrix';
@@ -139,6 +141,7 @@ export default function FocusPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
+  <HistoricalScientificBacktest surface="FOCUS" evaluation={historicalPilot}/>
   <p><a href="#focus-site-spreadsheet" style={{display:"inline-block",padding:"9px 13px",background:"#edf8ef",border:"1px solid #789987",borderRadius:7,fontWeight:700,marginRight:10}}>Open FOCUS spreadsheet · Overall + L01–L03</a></p>
   <p><a href="#focus-chart-quick-view" style={{display:"inline-block",padding:"9px 13px",background:"#e8f3ed",border:"1px solid #7baf99",borderRadius:7,fontWeight:700}}>View four-line FOCUS chart</a></p>
   <div aria-label="Top table sorting controls" style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"12px 0 18px"}}>

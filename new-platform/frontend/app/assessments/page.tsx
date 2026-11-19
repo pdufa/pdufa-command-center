@@ -1,3 +1,5 @@
+import HistoricalScientificBacktest from "../HistoricalScientificBacktest";
+import historicalPilot from "../../data/historicalScientificPilot2026.json";
 import FocusSavedAssessments from "../FocusSavedAssessments";
 import PastSavedAssessments from "../PastSavedAssessments";
 import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
@@ -10,6 +12,7 @@ export default async function AssessmentsPage({searchParams}:{searchParams:Promi
  return <main className="shell">
   <div className="topline">PDUFA COMMAND CENTER · SCIENTIFIC ASSESSMENTS</div>
   <h1>ASSESSMENTS · Scientific Levels 1–3</h1>
+  <HistoricalScientificBacktest surface="ASSESSMENTS" evaluation={historicalPilot}/>
   <p><a href="#focus-chart-quick-view" style={{display:"inline-block",padding:"9px 13px",background:"#e8f3ed",border:"1px solid #7baf99",borderRadius:7,fontWeight:700}}>View FOCUS four-line score chart</a></p>
   <p><Link href="/">← Command Center</Link></p>
   <p>Run source-backed assessments by exact NCT trial. Levels 1–3 evaluate trial identity, clinical design, efficacy and statistics. Scientific scores are withheld until validated; FDA predictions remain ABSTAIN. Historical runs require eligible pre-cutoff source snapshots.</p>

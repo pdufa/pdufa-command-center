@@ -63,3 +63,17 @@ test("all abstentions retain coverage and leave accuracy unavailable", () => {
   const html = show("ASSESSMENTS", {...evaluation, summary});
   assert.match(html, /<td>0.0%<\/td><td>Unavailable<\/td><td>Unavailable<\/td>/);
 });
+
+test("wired surfaces use the one-case prereveal receipt and outcome-free metrics", () => {
+  const pilot = require("../data/historicalScientificPilot2026.json");
+  const receipt = require("../../../data/backtest/receipts/2026-timing-035-prereveal.json");
+  assert.equal(pilot.lockSha256, receipt.lock_sha256);
+  assert.equal(pilot.eligibleEvents, receipt.eligible_events);
+  assert.doesNotMatch(JSON.stringify(pilot), /actual_|always_approve|fda_source_url/);
+  for (const surface of ["POOL", "FOCUS", "PAST", "ASSESSMENTS"]) {
+    const page = readFileSync(require.resolve(`../app/${surface.toLowerCase()}/page.tsx`), "utf8");
+    assert.ok(page.includes(`surface="${surface}" evaluation={historicalPilot}`));
+    assert.match(show(surface, pilot), /Verified one-case pilot · 1 eligible FDA action/);
+  }
+  assert.equal((show("ASSESSMENTS", pilot).match(/0\.0%<\/td><td>Unavailable<\/td>/g) || []).length, 6);
+});
