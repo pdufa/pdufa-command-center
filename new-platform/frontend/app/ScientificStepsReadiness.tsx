@@ -5,6 +5,9 @@ export type PhaseFirstIntake = {
  executionStatus:"INTAKE_ONLY"|"BLOCKED_UNVERIFIED_PHASE";
  phase:string|null;
  trialStatus:string|null;
+ registrySourceDate?:string|null;
+ registryCheckedAt?:string|null;
+ assessmentCutoff?:string|null;
  evidenceInventory:Record<string,string>;
  notYetExpected:string[];
  missingEvidence:string[];
@@ -33,6 +36,12 @@ export default function ScientificStepsReadiness({cohort,trial}:{cohort:"POOL"|"
   <ol style={{margin:"0 0 10px",paddingLeft:22}}>
    {steps.map(([n,name,description])=><li key={n} style={{marginBottom:6}}><strong>{name} — {safeIntake?"Intake only; not scientifically validated":"Not live"}</strong><span style={{display:"block",fontSize:13}}>{description}</span></li>)}
   </ol>
+  {phaseVerified&&safeIntake&&trial&&<p>
+   <a href={"https://clinicaltrials.gov/study/"+trial.nctId}>Exact registry record</a>
+   {" · Version posted "+(safeIntake.registrySourceDate??"unavailable")}
+   {" · Checked "+(safeIntake.registryCheckedAt??"unavailable")}
+   {" · Cutoff "+(safeIntake.assessmentCutoff??"unavailable")}
+  </p>}
   {safeIntake&&<p style={{fontSize:13}}>Not yet expected: {safeIntake.notYetExpected.join("; ")||"None listed"}. Missing: {safeIntake.missingEvidence.join("; ")||"None recorded"}.</p>}
   <p style={{fontSize:13,margin:0}}>Activation requires exact-NCT data binding, phase-appropriate source review, passing tests, and production verification. <Link href="/analyze-now">Research workspace</Link> may show separate saved research; it does not establish these steps are active.</p>
  </section>;

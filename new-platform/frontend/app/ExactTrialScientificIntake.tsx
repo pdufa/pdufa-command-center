@@ -6,6 +6,10 @@ import ScientificLevelsEvidence from "./ScientificLevelsEvidence";
 import ScientificPopulationEvidence from "./ScientificPopulationEvidence";
 import ScientificSafetyExposureEvidence from "./ScientificSafetyExposureEvidence";
 
+const scientificLevelOptions=[
+ [1,"Trial identity"],[2,"Trial design"],[3,"Statistics and efficacy"],[4,"Safety"],
+ [5,"Indication-specific relevance"],[6,"Regulatory readiness"],
+] as const;
 const NCT=/^NCT\d{8}$/;
 type Cohort="POOL"|"FOCUS"|"PAST";
 type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown;levelsSevenToTwenty?:unknown};
@@ -21,6 +25,7 @@ function validIntake(value:unknown):value is PhaseFirstIntake {
 }
 /** Explicit exact-program selection is required: an NCT may map to several programs. */
 export default function ExactTrialScientificIntake({cohort,nctId,programIdentity}:{cohort:Cohort;nctId:string;programIdentity:string}){
+ const [selectedLevel,setSelectedLevel]=useState(0);
  const [intake,setIntake]=useState<PhaseFirstIntake|null>(null);
  const [levels,setLevels]=useState<unknown>(null);
  const [extensions,setExtensions]=useState<unknown>(null);
@@ -52,10 +57,16 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
  return <section aria-label={"Exact "+cohort+" trial scientific intake"}>
   <button type="button" disabled={busy} onClick={()=>void load()}>{busy?"Checking exact trial…":"Load exact-trial scientific intake"}</button>
   {error&&<p role="alert">{error}</p>}
-  {intake&&<ScientificSafetyExposureEvidence value={extensions}/>}
-  {intake&&<ScientificPopulationEvidence value={extensions}/>}
-  {intake&&<ScientificLevelsEvidence value={levels}/>}
-  {intake&&<ScientificStepsReadiness cohort={cohort} trial={{nctId,assessmentNctId:nctId,intake}}/>}
+  {intake&&<>
+   <label>Scientific level <select value={selectedLevel} onChange={event=>setSelectedLevel(Number(event.target.value))}>
+    <option value={0}>All six levels</option>
+    {scientificLevelOptions.map(([number,label])=><option key={number} value={number}>Level {number} · {label}</option>)}
+   </select></label>
+   {(selectedLevel===0||selectedLevel===1)&&<ScientificStepsReadiness cohort={cohort} trial={{nctId,assessmentNctId:nctId,intake}}/>}
+   {(selectedLevel===0||selectedLevel>1)&&<ScientificLevelsEvidence value={levels} selectedLevel={selectedLevel||undefined}/>}
+  </>}
+  {intake&&selectedLevel===0&&<ScientificSafetyExposureEvidence value={extensions}/>}
+  {intake&&selectedLevel===0&&<ScientificPopulationEvidence value={extensions}/>}
  </section>;
 }
 
