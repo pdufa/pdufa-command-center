@@ -25,18 +25,25 @@ def inspect_packet(row):
                if not row.get(x, "").strip()]
     if missing:
         return "BLOCKED_MISSING_" + "_".join(missing).upper()
-    cutoff = date.fromisoformat(row["predecision_evidence_cutoff"])
-    published = [date.fromisoformat(s.strip()) for s in
-                 row["source_publication_dates"].split(";") if s.strip()]
+    try:
+        cutoff = date.fromisoformat(row["predecision_evidence_cutoff"])
+        published = [date.fromisoformat(s.strip()) for s in
+                     row["source_publication_dates"].split(";") if s.strip()]
+    except ValueError:
+        return "BLOCKED_INVALID_SOURCE_DATE"
     urls = [s.strip() for s in row["historical_source_urls"].split(";") if s.strip()]
     hashes = [s.strip() for s in row["source_content_hashes"].split(";") if s.strip()]
     if not published or len(urls) != len(published) or len(urls) != len(hashes):
         return "BLOCKED_SOURCE_PROVENANCE_MISMATCH"
+    if any(not u.startswith(("https://", "http://")) or any(c.isspace() for c in u)
+           for u in urls):
+        return "BLOCKED_INVALID_SOURCE_URL"
     if any(d > cutoff for d in published):
         return "BLOCKED_POSTCUTOFF_SOURCE"
     if any(len(h) != 64 or any(c not in "0123456789abcdefABCDEF" for c in h)
            for h in hashes):
         return "BLOCKED_INVALID_SOURCE_HASH"
+    # Hashes are syntax-checked here, not verified against downloaded source bytes.
     return "SOURCE_PACKET_DATE_CHECK_PASSED_REQUIRES_INDEPENDENT_BLIND_REVIEW"
 
 def main():
