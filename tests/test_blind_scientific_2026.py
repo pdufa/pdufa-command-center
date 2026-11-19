@@ -1,6 +1,11 @@
 """Synthetic contract fixtures only, never used as study evidence."""
 
 from copy import deepcopy
+import csv
+import json
+import tempfile
+from types import SimpleNamespace
+from unittest.mock import patch
 import sys
 import unittest
 from pathlib import Path
@@ -92,6 +97,31 @@ class HistoricalScientificExecutionTests(unittest.TestCase):
         self.assertEqual(
             {item["cutoff_date"] for item in self.predictions(lock).values()}, {"2026-03-31"}
         )
+
+    def test_scoring_uses_verified_lock_and_exact_fda_cycle(self):
+        from report_blind_six_levels_2026 import score
+        from score_scientific_backtest_2026 import validate_ledger
+
+        lock = self.lock()
+        truth = {**self.event, "actual_outcome": "APPROVE",
+                 "identity_status": "VERIFIED_ELIGIBLE", "fda_source_url": "https://fda.gov/fixture"}
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            args = SimpleNamespace(
+                output=base / "summary.json", locked=base / "locked.json",
+                outcomes=base / "outcomes.csv", expected_lock_sha256=lock["lock_sha256"],
+            )
+            engine.write_new_lock(args.locked, lock)
+            with args.outcomes.open("w", newline="") as stream:
+                writer = csv.DictWriter(stream, fieldnames=truth)
+                writer.writeheader()
+                writer.writerow(truth)
+            with patch("builtins.print"):
+                score(args, engine.verify_canonical_lock, engine.load_csv, validate_ledger)
+            summary = json.loads(args.output.read_text())
+        self.assertEqual([row["level"] for row in summary], list(engine.LEVELS))
+        self.assertIsNone(summary[0]["accuracy"])
+        self.assertEqual(summary[2]["correct"], 1)
 
     def test_material_blocker_and_unknown_have_different_dispositions(self):
         trial = self.package["trials"][0]
