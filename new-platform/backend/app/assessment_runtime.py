@@ -12,7 +12,7 @@ import io
 import json
 import math
 import re
-from uuid import uuid4
+from uuid import NAMESPACE_URL, uuid4, uuid5
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
@@ -53,12 +53,14 @@ def sha(v):
 class RunInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
     nct: str = Field(pattern=r'^NCT[0-9]{8}$')
-    level: StrictInt = Field(ge=1, le=6)
+    level: StrictInt = Field(ge=1, le=20)
     mode: str = Field(pattern=r'^(CURRENT_EVIDENCE|BLIND_HISTORICAL)$')
     cutoffDate: date | None = None
-    contract: str = Field(default='LEGACY_SOURCE_AUDIT', pattern=r'^(LEGACY_SOURCE_AUDIT|SCIENTIFIC_1_3)$')
+    contract: str = Field(default='LEGACY_SOURCE_AUDIT', pattern=r'^(LEGACY_SOURCE_AUDIT|SCIENTIFIC_1_3|EXTENDED_7_20)$')
 
     def checked(self):
+        if (self.level >= 7) != (self.contract == 'EXTENDED_7_20'):
+            raise HTTPException(422, 'Levels 7–20 require the extended assessment contract')
         if self.contract == 'SCIENTIFIC_1_3' and self.level > 3:
             raise HTTPException(422, 'Scientific execution currently supports Levels 1–3 only')
         if self.mode == 'BLIND_HISTORICAL':
@@ -89,7 +91,13 @@ def initialize(engine):
             engine_version TEXT NOT NULL, mode TEXT NOT NULL, created_at TEXT NOT NULL,
             report_hash TEXT NOT NULL, report_json TEXT NOT NULL)'''))
         c.execute(text('CREATE INDEX IF NOT EXISTS assessment_v2_result_nct ON assessment_v2_results(nct_id,created_at)'))
-        for table in ('assessment_v2_sources', 'assessment_v2_results'):
+        c.execute(text('''CREATE TABLE IF NOT EXISTS assessment_extended_results (
+            run_id TEXT PRIMARY KEY REFERENCES assessment_v2_jobs(run_id),
+            nct_id VARCHAR(11) NOT NULL, level INTEGER NOT NULL CHECK(level BETWEEN 7 AND 20),
+            engine_version TEXT NOT NULL, mode TEXT NOT NULL, created_at TEXT NOT NULL,
+            report_hash TEXT NOT NULL, report_json TEXT NOT NULL)'''))
+        c.execute(text('CREATE INDEX IF NOT EXISTS assessment_extended_result_nct ON assessment_extended_results(nct_id,created_at)'))
+        for table in ('assessment_v2_sources', 'assessment_v2_results', 'assessment_extended_results'):
             if engine.dialect.name == 'postgresql':
                 c.execute(text('''CREATE OR REPLACE FUNCTION assessment_v2_immutable() RETURNS trigger
                     LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Assessment evidence and results are append-only'; END; $$'''))
@@ -236,10 +244,12 @@ def scientific_historical_target(engine, request):
     return {**target,'verification':'EXACT_VERIFIED_LINK_DATE_ONLY_NO_OUTCOME_LABEL_READ'}
 
 
-def source_for(engine, request, collector=collect_registry):
+def source_for(engine, request, collector=collect_registry, document_collector=None):
     if request.mode == 'CURRENT_EVIDENCE':
         document_level = ({1:1,2:4,3:5}[request.level] if request.contract=='SCIENTIFIC_1_3' else request.level)
-        source = collect_documents(collector(request.nct), document_level)
+        if request.contract == 'EXTENDED_7_20' and request.level in {12, 13}:
+            document_level = 5
+        source = (document_collector or collect_documents)(collector(request.nct), document_level)
         if source['nct_id'] != request.nct or source['input_sha256'] != sha(json.loads(source['document_json'])):
             raise ValueError('Collected evidence identity/digest mismatch')
         with engine.begin() as c:
@@ -249,7 +259,7 @@ def source_for(engine, request, collector=collect_registry):
         return source
     # A current-source cache is NEVER consulted. Both original capture and
     # source publication must precede the cutoff, independently of revision date.
-    target=scientific_historical_target(engine,request) if request.contract=='SCIENTIFIC_1_3' else None
+    target=scientific_historical_target(engine,request) if request.contract in {'SCIENTIFIC_1_3', 'EXTENDED_7_20'} else None
     cutoff = request.cutoffDate.isoformat()
     with engine.connect() as c:
         rows = c.execute(text('''SELECT * FROM assessment_v2_sources WHERE nct_id=:nct
@@ -390,6 +400,9 @@ ENGINES={1:level_one,2:level_two,3:level_three,4:level_four,5:level_five,6:level
 
 
 def assess(request, source):
+    if request.contract == 'EXTENDED_7_20':
+        from .extended_assessment import assess_extended
+        return assess_extended(request, source)
     if request.contract == 'SCIENTIFIC_1_3':
         from .scientific_trial_assessment import assess_scientific
         return assess_scientific(request, source)
@@ -430,13 +443,20 @@ def progress(engine, run_id, stage):
         c.execute(text("UPDATE assessment_v2_jobs SET status='RUNNING',progress_json=:events,updated_at=:at WHERE run_id=:id"),{'id':run_id,'events':packed(events),'at':now()})
 
 
-def execute(engine, run_id, collector=collect_registry):
+def execute(engine, run_id, collector=collect_registry, document_collector=None):
     try:
         with engine.connect() as c:
             raw=c.execute(text('SELECT request_json FROM assessment_v2_jobs WHERE run_id=:id'),{'id':run_id}).scalar_one()
         request=RunInput.model_validate_json(raw).checked()
+        if request.contract == 'EXTENDED_7_20':
+            with engine.begin() as c:
+                claimed = c.execute(text(
+                    "UPDATE assessment_v2_jobs SET status='RUNNING',updated_at=:at WHERE run_id=:id AND status='QUEUED'"
+                ), {'id': run_id, 'at': now()}).rowcount
+            if not claimed:
+                return
         progress(engine,run_id,'RETRIEVING_CURRENT_SOURCES' if request.mode=='CURRENT_EVIDENCE' else 'SELECTING_PRE_CUTOFF_SNAPSHOT')
-        source=source_for(engine,request,collector)
+        source=source_for(engine,request,collector,document_collector)
         progress(engine,run_id,f'EXECUTING_LEVEL_{request.level}')
         report=assess(request,source);report['runId']=run_id
         if request.contract=='SCIENTIFIC_1_3' and request.mode=='CURRENT_EVIDENCE':
@@ -448,8 +468,9 @@ def execute(engine, run_id, collector=collect_registry):
                 report['ownerRoster']={'rosterId':saved['roster_id'],'sourceUrl':saved['source_url'],'retrievedAt':saved['retrieved_at'],'identity':member,'meaning':'Owner-reported exact-NCT cohort identity, not scientific or FDA application verification; never used by scoring'}
                 report['trialIdentity'].update(ticker=member['ticker'],issuerCompany=member['company'],tickerStatus='OWNER_ROSTER_REPORTED_NOT_INDEPENDENTLY_VERIFIED',pdufaDate=member.get('pdufaDate'),pdufaVerification='OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED')
         progress(engine,run_id,'PERSISTING_IMMUTABLE_RESULT')
+        table = 'assessment_extended_results' if request.level >= 7 else 'assessment_v2_results'
         with engine.begin() as c:
-            c.execute(text('''INSERT INTO assessment_v2_results(run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
+            c.execute(text(f'''INSERT INTO {table}(run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
                 VALUES(:id,:nct,:level,:version,:mode,:at,:hash,:report)'''),
                 {'id':run_id,'nct':request.nct,'level':request.level,'version':report['engineVersion'],'mode':request.mode,'at':report['executedAt'],'hash':sha(report),'report':packed(report)})
             c.execute(text("UPDATE assessment_v2_jobs SET status='COMPLETED',updated_at=:at WHERE run_id=:id"),{'id':run_id,'at':now()})
@@ -460,12 +481,25 @@ def execute(engine, run_id, collector=collect_registry):
             c.execute(text("UPDATE assessment_v2_jobs SET status='FAILED',error=:error,updated_at=:at WHERE run_id=:id"),{'id':run_id,'at':now(),'error':reason[:500]})
 
 
-def create(engine, request):
-    request.checked();initialize(engine)
-    run_id=str(uuid4());at=now()
+def create(engine, request, *, source_event=None):
+    request.checked()
+    if source_event is not None and (
+        request.contract != 'EXTENDED_7_20' or request.mode != 'CURRENT_EVIDENCE'
+        or not re.fullmatch(r'[a-f0-9]{64}', source_event)
+    ):
+        raise ValueError('Source events require a current extended assessment and a SHA-256 digest')
+    initialize(engine)
+    run_id = str(uuid4()) if source_event is None else str(uuid5(
+        NAMESPACE_URL, f'pdufa-assessment:{request.nct}:{request.level}:{source_event}'
+    ))
+    at = now()
+    conflict = ' ON CONFLICT (run_id) DO NOTHING' if source_event is not None else ''
     with engine.begin() as c:
-        c.execute(text('''INSERT INTO assessment_v2_jobs(run_id,nct_id,request_json,status,progress_json,created_at,updated_at)
-            VALUES(:id,:nct,:request,'QUEUED',:progress,:at,:at)'''),{'id':run_id,'nct':request.nct,'request':request.model_dump_json(),'progress':packed([{'stage':'QUEUED','at':at}]),'at':at})
+        c.execute(text('''INSERT INTO assessment_v2_jobs
+            (run_id,nct_id,request_json,status,progress_json,created_at,updated_at)
+            VALUES(:id,:nct,:request,'QUEUED',:progress,:at,:at)''' + conflict),
+            {'id': run_id, 'nct': request.nct, 'request': request.model_dump_json(),
+             'progress': packed([{'stage': 'QUEUED', 'at': at}]), 'at': at})
     return run_id
 
 
@@ -477,7 +511,9 @@ def status(engine,nct,run_id):
     with engine.connect() as c:
         row=c.execute(text('SELECT * FROM assessment_v2_jobs WHERE run_id=:id AND nct_id=:nct'),{'id':run_id,'nct':nct}).mappings().first()
         if not row: raise HTTPException(404,'Assessment run not found for this exact NCT')
-        result=c.execute(text('SELECT report_json,report_hash FROM assessment_v2_results WHERE run_id=:id'),{'id':run_id}).first()
+        extended = json.loads(row['request_json']).get('contract') == 'EXTENDED_7_20'
+        table = 'assessment_extended_results' if extended else 'assessment_v2_results'
+        result=c.execute(text(f'SELECT report_json,report_hash FROM {table} WHERE run_id=:id'),{'id':run_id}).first()
     state=row['status'];error=row['error']
     if state in {'QUEUED','RUNNING'} and datetime.fromisoformat(row['updated_at']) < datetime.now(timezone.utc)-timedelta(minutes=3):
         state='FAILED';error='Execution was interrupted. No completed result exists; start a new run.'
@@ -493,12 +529,22 @@ def verified_report(row):
 
 
 def history(engine,nct,level=None):
-    if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6): raise HTTPException(422,'Exact NCT and level 1–6 required')
-    if not inspect(engine).has_table('assessment_v2_results'):
+    if not NCT.fullmatch(nct) or (level is not None and not 1 <= level <= 20):
+        raise HTTPException(422,'Exact NCT and level 1–20 required')
+    tables = []
+    db = inspect(engine)
+    if (level is None or level <= 6) and db.has_table('assessment_v2_results'):
+        tables.append('assessment_v2_results')
+    if (level is None or level >= 7) and db.has_table('assessment_extended_results'):
+        tables.append('assessment_extended_results')
+    if not tables:
         return {'nct':nct,'runs':[],'hasMore':False}
+    level_filter = '' if level is None else ' AND level=:level'
+    query = ' UNION ALL '.join(
+        f'SELECT report_json,report_hash,created_at,run_id FROM {table} WHERE nct_id=:nct{level_filter}'
+        for table in tables
+    )
     with engine.connect() as c:
-        query='SELECT report_json,report_hash FROM assessment_v2_results WHERE nct_id=:nct'
-        if level is not None:query+=' AND level=:level'
         rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),{'nct':nct,'level':level}).all()
     runs=[];size=0
     for row in rows[:50]:
@@ -578,7 +624,7 @@ def catalog(engine, population, query):
     return {'population':population,'trials':list(rows.values())[:50]}
 
 
-def router(engine_provider, auth, storage, writes, *, allow_local=False):
+def router(engine_provider, auth, storage, writes, *, allow_local=False, allow_extended=False):
     api=APIRouter(prefix='/api/assessment-runtime',dependencies=[Depends(auth),Depends(storage)])
     def engine():
         value=engine_provider()
@@ -601,7 +647,10 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         return {'batchId':batch,'status':'BOUNDED_BATCH_QUEUED','maximumItems':6}
     @api.post('/runs',status_code=202,dependencies=[Depends(writes)])
     def start(request:RunInput, tasks:BackgroundTasks):
-        db=engine();request.checked()
+        request.checked()
+        if request.contract == 'EXTENDED_7_20' and not allow_extended:
+            raise HTTPException(503, 'Extended assessments require the isolated development runtime')
+        db=engine()
         if request.mode=='BLIND_HISTORICAL':
             initialize(db)
             try:source_for(db,request)

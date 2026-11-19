@@ -4,6 +4,8 @@ on:
     branches: [main, new-platform-bootstrap, codex/level1-6-explicit-scientific-readiness-20261114]
     paths:
       - 'new-platform/backend/app/assessment_runtime.py'
+      - 'new-platform/backend/app/extended_*assessment.py'
+      - 'new-platform/backend/tests/test_extended_*.py'
       - 'new-platform/backend/app/scientific_trial_assessment.py'
       - 'new-platform/backend/app/focus_assessment_batch.py'
       - 'new-platform/backend/scripts/run_focus_scientific_batch.py'

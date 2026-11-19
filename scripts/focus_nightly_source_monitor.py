@@ -157,6 +157,10 @@ def build_report(roster, applications, prior, fetcher, now=None):
                  "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE",
                  "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW"}
                 for c in queue],
+            "extendedAssessmentQueue": [
+                {"nct": row["nct"], "sourceHash": row["sourceHash"], "levels": list(range(7, 21)),
+                 "status": "QUEUED_FOR_DEVELOPMENT_REASSESSMENT", "publish": False}
+                for row in trials if row["nct"] in changed],
             "unmappedApplicationReviewQueue": [{"nct": nct, "ticker": rows[nct]["ticker"],
                 "reason":"CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
                 "action":"INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION"} for nct in unlinked],

@@ -2,18 +2,29 @@
 import {useEffect,useRef,useState} from 'react';
 import ScientificTrialFindings from './ScientificTrialFindings';
 type Check={id:string;state:string;explanation:string;locator:string};
-type Report={runId:string;nct:string;level:number;name:string;mode:string;cutoffDate:string|null;executedAt:string;engineVersion:string;reportHash:string;scientificStatus:string;activationStatus:string;ownerReviewStatus:string;score:{value:number|null;available:number;applicable:number;kind:string;method:string};fdaPrediction:{outcome:string;confidence:string;calibration:string};context:{phases:string[];phaseVerification:string;registryStatus:string|null;regulatoryStatus:string;conditions:string[];indicationAnalysis:{domain:string;question:string}[]};checks:Check[];observations:unknown[];risks:string[];recommendations:string[];limitations:string[];evidence:{source_url:string;captured_at:string;published_at:string;input_sha256:string;raw_sha256:string;snapshot_id:string}};
+type Report={runId:string;nct:string;level:number;name:string;mode:string;cutoffDate:string|null;executedAt:string;engineVersion:string;reportHash:string;evidenceStatus?:string;scientificStatus:string;activationStatus:string;ownerReviewStatus:string;score:{value:number|null;available:number;applicable:number;kind:string;method:string};fdaPrediction:{outcome:string;confidence:string;calibration:string};context:{phases:string[];phaseVerification:string;registryStatus:string|null;regulatoryStatus:string;conditions:string[];indicationAnalysis:{domain:string;question:string}[]};checks:Check[];observations:unknown[];risks:string[];recommendations:string[];limitations:string[];evidence:{source_url:string;captured_at:string;published_at:string;input_sha256:string;raw_sha256:string;snapshot_id:string}};
 type Choice={nct:string;ticker:string;title:string;population:string};
 const endpoint='/api/assessments/runtime';
-const names=['Trial verification','Clinical trial design','Efficacy and statistics'];
+const names=[
+ [1,'Trial verification'],[2,'Clinical trial design'],[3,'Efficacy and statistics'],
+] as const;
+const extendedNames=[
+ [7,'Evidence collection and provenance'],[8,'Trial identity and evidence readiness'],
+ [9,'Phase and indication hierarchy'],[10,'Efficacy'],[11,'Safety'],[12,'Statistical validity'],
+ [13,'Subgroups and unmet need'],[14,'FDA regulatory intelligence'],[15,'CMC and manufacturing'],
+ [16,'Advisory committees and exceptions'],[17,'Sponsor and commercial intelligence'],
+ [18,'Versioned predictions'],[19,'Historical backtesting and calibration'],
+ [20,'Integrated validation and release readiness'],
+] as const;
 const human=(v:string)=>v.replaceAll('_',' ');
 function Result({report:r}:{report:Report}){
  return <article style={{border:'1px solid #abc9bd',padding:16,borderRadius:10,minWidth:280,flex:'1 1 380px'}} aria-label={`Level ${r.level} saved assessment`}>
   <h3>Level {r.level}: {r.name}</h3><p>{r.nct} · {r.executedAt} · {r.mode}{r.cutoffDate?' · Cutoff '+r.cutoffDate:''}</p>
-  {r.score.kind==='NOT_VALIDATED'?<p><strong>Scientific score: NOT VALIDATED</strong>. {r.score.method}</p>:<p><strong>Evidence coverage: {r.score.value===null?'Not applicable':r.score.value+'%'}</strong> ({r.score.available}/{r.score.applicable} applicable checks). {r.score.method}</p>}
+  {r.score.kind==='NOT_VALIDATED'?<p><strong>Scientific score: {r.level>=7?'NOT SCORED':'NOT VALIDATED'}</strong>. {r.score.method}</p>:<p><strong>Evidence coverage: {r.score.value===null?'Not applicable':r.score.value+'%'}</strong> ({r.score.available}/{r.score.applicable} applicable checks). {r.score.method}</p>}
   <p>FDA prediction: <strong>{r.fdaPrediction.outcome}</strong> · {r.fdaPrediction.confidence}. {r.fdaPrediction.calibration}</p>
   <p>Phase: {r.context.phases.join(', ')||'Unresolved'} ({r.context.phaseVerification}); trial status: {r.context.registryStatus||'Unresolved'}. Regulatory status: {r.context.regulatoryStatus}.</p>
   <p>Scientific status: {human(r.scientificStatus)}. {human(r.activationStatus)}. {human(r.ownerReviewStatus)}.</p>
+  {r.evidenceStatus&&<p>Evidence status: {human(r.evidenceStatus)}</p>}
   <ScientificTrialFindings value={r}/>
   <ul>{r.checks.map(c=><li key={c.id}><strong>{human(c.id)}: {human(c.state)}</strong> — {c.explanation}<br/><small>{c.locator}</small></li>)}</ul>
   <h4>Indication-specific review</h4>{r.context.indicationAnalysis.map(i=><p key={i.domain}><strong>{i.domain}:</strong> {i.question}</p>)}
@@ -25,6 +36,9 @@ function Result({report:r}:{report:Report}){
 }
 export default function AssessmentWorkbench({selectedNct}:{selectedNct?:string}){
  const [nct,setNct]=useState(selectedNct||''),[level,setLevel]=useState(1),[mode,setMode]=useState('CURRENT_EVIDENCE'),[cutoff,setCutoff]=useState(''),[population,setPopulation]=useState('FOCUS'),[query,setQuery]=useState(''),[choices,setChoices]=useState<Choice[]>([]),[runs,setRuns]=useState<Report[]>([]),[selected,setSelected]=useState<string[]>([]),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
+ const extended=process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS==='1';
+ const [historySort,setHistorySort]=useState<'newest'|'level'>('newest');
+ const sortedRuns=[...runs].sort((a,b)=>(historySort==='level'?a.level-b.level:0)||b.executedAt.localeCompare(a.executedAt));
  const controller=useRef<AbortController|null>(null);
  const selectionRevision=useRef(0);
  const searchRevision=useRef(0);
@@ -39,7 +53,7 @@ export default function AssessmentWorkbench({selectedNct}:{selectedNct?:string})
  async function run(){
   if(busy)return;historyRevision.current++;const revision=selectionRevision.current;const requestedNct=nct;const requestedLevel=level;const requestedMode=mode;const requestedCutoff=cutoff;setBusy(true);setError('');setMessage('Submitting the selected level…');controller.current=new AbortController();const signal=controller.current.signal;
   try{
-   const created=await read(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nct:requestedNct,level:requestedLevel,mode:requestedMode,contract:'SCIENTIFIC_1_3',...(requestedMode==='BLIND_HISTORICAL'?{cutoffDate:requestedCutoff}:{})}),signal});
+   const created=await read(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nct:requestedNct,level:requestedLevel,mode:requestedMode,contract:requestedLevel>=7?'EXTENDED_7_20':'SCIENTIFIC_1_3',...(requestedMode==='BLIND_HISTORICAL'?{cutoffDate:requestedCutoff}:{})}),signal});
    if(revision!==selectionRevision.current)return;
    if(typeof created.runId!=='string'||!/^[a-f0-9-]{36}$/.test(created.runId))throw Error('Assessment backend did not return a valid run identifier.');
    const until=Date.now()+180000;
@@ -58,15 +72,16 @@ export default function AssessmentWorkbench({selectedNct}:{selectedNct?:string})
  return <section aria-label="Assessment workbench" data-assessment-ready={ready?"true":"false"} aria-busy={busy||!ready} style={{padding:20,border:'2px solid #16856c',borderRadius:12,margin:'16px 0'}}>
   <h2>Run an individual trial assessment</h2>
   <p>Levels 1–3 execute source-bound trial verification, design review, and efficacy/statistical analysis. Unvalidated scientific scores and FDA predictions remain NOT VALIDATED / ABSTAIN. Legacy source-audit histories retain their original meanings.</p>
+  {extended&&<p>Levels 7–20 record versioned evidence findings for development review.</p>}
   <fieldset disabled={busy||!ready}><legend>Trial selection</legend><label>Trial population <select aria-label="Trial population" value={population} onChange={e=>{searchRevision.current++;setPopulation(e.target.value);setChoices([]);setMessage('');setBusy(false);}}>{['POOL','FOCUS','HISTORICAL'].map(p=><option key={p} value={p}>{p==='HISTORICAL'?'PAST':p}</option>)}</select></label>{' '}<label>Search NCT, company or ticker <input value={query} onChange={e=>{searchRevision.current++;setQuery(e.target.value);setChoices([]);setBusy(false);}}/></label>{' '}<button type="button" onClick={()=>void search()}>Search trials</button>
    {choices.length>0&&<p><label>Matching exact trials <select aria-label="Matching exact trials" value="" onChange={e=>chooseNct(e.target.value)}><option value="">Choose a trial</option>{choices.map(c=><option key={c.nct} value={c.nct}>{c.nct} · {c.ticker} · {c.title}</option>)}</select></label></p>}
    <p><label>Exact NCT identifier <input value={nct} placeholder="NCT04576949" onChange={e=>chooseNct(e.target.value.trim().toUpperCase())}/></label></p>
   </fieldset>
-  <fieldset disabled={busy||!ready}><legend>Assessment execution</legend><label>Assessment level <select aria-label="Assessment level" value={level} onChange={e=>setLevel(Number(e.target.value))}>{names.map((name,i)=><option key={i} value={i+1}>Level {i+1} — {name}</option>)}</select></label>{' '}<label>Evidence mode <select aria-label="Evidence mode" value={mode} onChange={e=>setMode(e.target.value)}><option value="CURRENT_EVIDENCE">Current Evidence</option><option value="BLIND_HISTORICAL">Blind Historical</option></select></label>
+  <fieldset disabled={busy||!ready}><legend>Assessment execution</legend><label>Assessment level <select aria-label="Assessment level" value={level} onChange={e=>setLevel(Number(e.target.value))}>{(extended?[...names,...extendedNames]:names).map(([number,name])=><option key={number} value={number}>Level {number} — {name}</option>)}</select></label>{' '}<label>Evidence mode <select aria-label="Evidence mode" value={mode} onChange={e=>setMode(e.target.value)}><option value="CURRENT_EVIDENCE">Current Evidence</option><option value="BLIND_HISTORICAL">Blind Historical</option></select></label>
    {mode==='BLIND_HISTORICAL'&&<p><label>Historical evidence cutoff <input type="date" value={cutoff} onChange={e=>setCutoff(e.target.value)}/></label><br/>Only original snapshots captured and published by the cutoff can execute. Missing historical evidence causes a visible failure; no current-source fallback or outcome cache is used. Human outcome exposure is not certified.</p>}
    <p><button type="button" disabled={!valid||(mode==='BLIND_HISTORICAL'&&!cutoff)} onClick={()=>void run()}>Run Assessment</button>{' '}<button type="button" disabled={!valid} onClick={()=>void history()}>Load saved assessment history</button></p>
   </fieldset>
   {message&&<p role="status" aria-live="polite">{message}</p>}{error&&<p role="alert">{error}</p>}
-  {runs.length>0&&<div><h3>Compare saved levels and versions</h3><p>Select up to three persisted results to compare side by side. Outcomes remain separate from assessment inputs.</p><ul>{runs.map(r=><li key={r.runId}><label><input type="checkbox" checked={selected.includes(r.runId)} disabled={!selected.includes(r.runId)&&selected.length>=3} onChange={e=>setSelected(current=>e.target.checked?[...current,r.runId]:current.filter(id=>id!==r.runId))}/> Level {r.level} · {r.executedAt} · {r.mode} · {r.engineVersion}</label></li>)}</ul><div style={{display:'flex',flexWrap:'wrap',gap:14}}>{runs.filter(r=>selected.includes(r.runId)).map(r=><Result key={r.runId} report={r}/>)}</div></div>}
+  {runs.length>0&&<div><h3>Compare saved levels and versions</h3><p>Select up to three persisted results to compare side by side. Outcomes remain separate from assessment inputs.</p><label>Sort saved assessments <select value={historySort} onChange={e=>setHistorySort(e.target.value==='level'?'level':'newest')}><option value="newest">Newest first</option><option value="level">Level ascending</option></select></label><ul>{sortedRuns.map(r=><li key={r.runId}><label><input type="checkbox" checked={selected.includes(r.runId)} disabled={!selected.includes(r.runId)&&selected.length>=3} onChange={e=>setSelected(current=>e.target.checked?[...current,r.runId]:current.filter(id=>id!==r.runId))}/> Level {r.level} · {r.executedAt} · {r.mode} · {r.engineVersion}</label></li>)}</ul><div style={{display:'flex',flexWrap:'wrap',gap:14}}>{sortedRuns.filter(r=>selected.includes(r.runId)).map(r=><Result key={r.runId} report={r}/>)}</div></div>}
  </section>;
 }

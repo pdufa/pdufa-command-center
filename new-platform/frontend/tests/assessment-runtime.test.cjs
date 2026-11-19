@@ -275,3 +275,45 @@ test('dedicated production Level 1–3 API credentials are scoped and fail close
   delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
  }
 });
+
+test('extended workbench routes exact-NCT Level 20 and sorts abstentions by level',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const oldFetch=global.fetch, oldFlag=process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS;
+ process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS='1';
+ let tree, submitted;
+ const makeReport=(level,executedAt)=>({
+  runId:(level===20?'a':'b').repeat(36),nct,level,executedAt,name:'Evidence',mode:'CURRENT_EVIDENCE',
+  cutoffDate:null,engineVersion:'test',reportHash:'c'.repeat(64),scientificStatus:'NOT_VALIDATED',
+  activationStatus:'RESEARCH_EXECUTION_ONLY',ownerReviewStatus:'OWNER_NOT_REVIEWED',evidenceStatus:'INSUFFICIENT',
+  score:{kind:'NOT_VALIDATED',value:null},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED',calibration:'NONE'},
+  context:{phases:[],phaseVerification:'UNVERIFIED',indicationAnalysis:[]},
+  checks:[],observations:[],risks:[],recommendations:[],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct},
+ });
+ const latest=makeReport(20,'2026-11-18'),older=makeReport(7,'2026-11-17');
+ global.fetch=async(url,init={})=>{
+  if(init.method==='POST'){
+   submitted=JSON.parse(init.body);
+   return Response.json({runId:latest.runId},{status:202});
+  }
+  return Response.json(String(url).includes('runId=')?{status:'COMPLETED',progress:[],report:latest}:{runs:[older,latest]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  const level=tree.root.findByProps({'aria-label':'Assessment level'});
+  assert.equal(level.findAllByType('option').length,17);
+  await act(async()=>{level.props.onChange({target:{value:'20'}});});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Run Assessment').props.onClick();});
+  assert.deepEqual(submitted,{nct,level:20,mode:'CURRENT_EVIDENCE',contract:'EXTENDED_7_20'});
+  const cards=()=>tree.root.findAllByType('article').map(c=>c.props['aria-label']);
+  assert.deepEqual(cards(),['Level 20 saved assessment','Level 7 saved assessment']);
+  await act(async()=>{tree.root.findAllByType('select').find(s=>s.props.value==='newest').props.onChange({target:{value:'level'}});});
+  assert.deepEqual(cards(),['Level 7 saved assessment','Level 20 saved assessment']);
+  assert.match(JSON.stringify(tree.toJSON()),/NOT SCORED/);
+ }finally{
+  if(tree)await act(async()=>tree.unmount());
+  global.fetch=oldFetch;
+  if(oldFlag===undefined)delete process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS;
+  else process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS=oldFlag;
+ }
+});

@@ -242,3 +242,84 @@ def test_authenticated_http_run_levels_one_to_three_and_saved_history(engine,mon
         assert len({entry['runId'] for entry in history.json()['runs']})==3
         assert client.get('/api/assessment-runtime/history/NCT00000001').json()['runs']==[]
     assert calls==['NCT04576949']*3
+
+
+def test_extended_authenticated_http_runs_preserve_versions_and_separate_legacy_history(engine, monkeypatch):
+    nct = 'NCT04576949'
+    execute = r.execute
+    monkeypatch.setattr(r, 'execute', lambda db, run_id: execute(db, run_id, snapshot))
+    app = FastAPI()
+    app.include_router(r.router(lambda: engine, lambda: None, lambda: None, lambda: None,
+                                allow_local=True, allow_extended=True))
+    api = '/api/assessment-runtime'
+    runs = []
+    with TestClient(app) as client:
+        for level in [1, *range(7, 21), 18]:
+            contract = 'EXTENDED_7_20' if level >= 7 else 'LEGACY_SOURCE_AUDIT'
+            response = client.post(f'{api}/runs', json={
+                'nct': nct, 'level': level, 'mode': 'CURRENT_EVIDENCE', 'contract': contract,
+            })
+            assert response.status_code == 202, response.text
+            run_id = response.json()['runId']
+            status = client.get(f'{api}/runs/{nct}/{run_id}').json()
+            assert status['status'] == 'COMPLETED', status['error']
+            report = status['report']
+            assert report['level'] == level
+            assert report['fdaPrediction']['outcome'] == 'ABSTAIN'
+            if level >= 7:
+                assert report['contract'] == contract
+                assert report['score']['status'] == 'NOT_SCORED'
+                assert report['score']['value'] is None and report['evidenceStatus']
+            runs.append(report)
+        history = client.get(f'{api}/history/{nct}').json()['runs']
+        assert history == list(reversed(runs))
+        assert client.get(f'{api}/history/{nct}?level=18').json()['runs'] == [runs[-1], runs[-4]]
+        assert client.get(f'{api}/history/NCT00000001').json()['runs'] == []
+
+    execute(engine, runs[-1]['runId'], lambda _: pytest.fail('Completed job cannot retry collection'))
+    assert r.status(engine, nct, runs[-1]['runId'])['report'] == runs[-1]
+    with pytest.raises(DatabaseError, match='append-only'), engine.begin() as connection:
+        connection.execute(text('DELETE FROM assessment_extended_results'))
+
+
+def test_extended_historical_ignores_later_snapshots_and_never_reads_labels(engine):
+    nct = 'NCT04576949'
+    with engine.begin() as conn:
+        conn.execute(text('CREATE TABLE phase3_trial_applications (nct_id TEXT, application_id TEXT, verification_status TEXT)'))
+        conn.execute(text('CREATE TABLE phase3_fda_decisions (application_id TEXT, decision_date TEXT, verification_status TEXT)'))
+        conn.execute(text("INSERT INTO phase3_trial_applications VALUES (:nct, 'exact-application', 'VERIFIED')"), {'nct': nct})
+        conn.execute(text("INSERT INTO phase3_fda_decisions VALUES ('exact-application', '2022-01-01', 'VERIFIED')"))
+    for captured, phase in [('2020-02-01T00:00:00+00:00', 'PHASE3'), ('2021-05-01T00:00:00+00:00', 'PHASE1')]:
+        current = r.RunInput(nct=nct, level=19, mode='CURRENT_EVIDENCE', contract='EXTENDED_7_20')
+        r.execute(engine, r.create(engine, current), lambda _: snapshot(nct, captured, phase))
+    historical = r.RunInput(nct=nct, level=19, mode='BLIND_HISTORICAL', cutoffDate=date(2021, 1, 1),
+                            contract='EXTENDED_7_20')
+    run_id = r.create(engine, historical)
+    r.execute(engine, run_id, lambda _: pytest.fail('Historical runs cannot fetch current data'))
+    result = r.status(engine, nct, run_id)
+    assert result['status'] == 'COMPLETED', result['error']
+    report = result['report']
+    assert report['context']['phases'] == ['PHASE3']
+    assert report['historicalAccuracyEligible'] is False
+    assert report['fdaPrediction']['probability'] is None
+
+
+def test_extended_write_requires_development_gate(engine):
+    app = FastAPI()
+    app.include_router(r.router(lambda: engine, lambda: None, lambda: None, lambda: None, allow_local=True))
+    response = TestClient(app).post('/api/assessment-runtime/runs', json={
+        'nct': 'NCT04576949', 'level': 7, 'mode': 'CURRENT_EVIDENCE', 'contract': 'EXTENDED_7_20',
+    })
+    assert response.status_code == 503
+
+
+def test_extended_source_event_queue_is_retry_safe_and_versions_changes(engine):
+    q = r.RunInput(nct='NCT04576949', level=8, mode='CURRENT_EVIDENCE', contract='EXTENDED_7_20')
+    first = r.create(engine, q, source_event='a' * 64)
+    assert r.create(engine, q, source_event='a' * 64) == first
+    r.execute(engine, first, snapshot)
+    assert r.create(engine, q, source_event='a' * 64) == first
+    second = r.create(engine, q, source_event='b' * 64)
+    r.execute(engine, second, snapshot)
+    assert second != first
+    assert [run['runId'] for run in r.history(engine, q.nct, 8)['runs']] == [second, first]

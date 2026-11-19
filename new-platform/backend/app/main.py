@@ -1637,7 +1637,10 @@ def assessment_engine():
             raise HTTPException(503, "Isolated assessment schema unavailable") from None
     return _ASSESSMENT_ENGINE
 
-app.include_router(assessment_runtime.router(assessment_engine, require_internal_key, require_storage, require_writes_enabled))
+app.include_router(assessment_runtime.router(
+    assessment_engine, require_internal_key, require_storage, require_writes_enabled,
+    allow_extended=ASSESSMENT_SCHEMA.startswith('dev_') and os.getenv('PDUFA_EXTENDED_ASSESSMENTS') == '1',
+))
 
 @app.get('/api/assessment-runtime/version')
 def assessment_runtime_version():
