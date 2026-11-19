@@ -10,7 +10,12 @@ m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 class AssessmentExportTests(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):cls.data=m.build()
+    def setUpClass(cls):
+        cls.data=m.build()
+
+    def test_historical_export_keeps_its_original_roster_date(self):
+        self.assertEqual(self.data['rosterAsOf'], '2026-11-14')
+        self.assertEqual(json.loads(m.HISTORICAL_ROSTER.read_text(encoding='utf-8'))['asOf'], '2026-11-14')
 
     def test_committed_package_reproduces_retained_research_inputs(self):
         self.assertEqual(json.loads(m.OUTPUT.read_text(encoding='utf-8')),self.data)

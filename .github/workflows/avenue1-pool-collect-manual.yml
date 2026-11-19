@@ -1,0 +1,78 @@
+name: Avenue 1 full POOL evidence collection (manual)
+on:
+  push:
+    branches:
+      - feature/avenue1-pool-evidence-collector-20261116
+    paths:
+      - '.github/workflows/avenue1-pool-collect-manual.yml'
+      - 'scripts/avenue1_pool_evidence_collector.py'
+      - 'tests/test_avenue1_pool_evidence_collector.py'
+  workflow_dispatch:
+    inputs:
+      test_limit:
+        description: '0 = every POOL trial; otherwise test first N trials'
+        required: true
+        default: '0'
+        type: choice
+        options:
+          - '0'
+          - '5'
+          - '25'
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    env:
+      PDUFA_API_BASE_URL: ${{ secrets.PDUFA_API_BASE_URL }}
+      PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_INTERNAL_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate collector before fetching
+        run: |
+          python -m py_compile scripts/avenue1_pool_evidence_collector.py
+          python -m unittest discover -s tests -p 'test_avenue1_pool_evidence_collector.py' -v
+      - name: Verify authenticated POOL configuration
+        env:
+          PDUFA_API_BASE_URL: ${{ secrets.PDUFA_API_BASE_URL }}
+          PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_INTERNAL_API_KEY }}
+        run: |
+          if [ -z "$PDUFA_API_BASE_URL" ] || [ -z "$PDUFA_INTERNAL_API_KEY" ]; then
+            echo "::error::Avenue 1 requires both GitHub Actions secrets: PDUFA_API_BASE_URL and PDUFA_INTERNAL_API_KEY"
+            exit 1
+          fi
+          echo "Both Avenue 1 GitHub Actions secrets are configured (values hidden)."
+      - name: Collect public evidence from authenticated full POOL
+        run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ github.event_name == 'push' && '5' || inputs.test_limit }}"
+      - name: Verify collection report integrity
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("artifacts/avenue1/collection-status.json").read_text())
+          inventory = json.loads(Path("artifacts/avenue1/pool-source-inventory.json").read_text())
+          assert inventory["nct_count"] == report["pool_nct_count"], "POOL inventory count mismatch"
+          assert inventory["source_sha256"] == report["pool_source_sha256"], "POOL source digest mismatch"
+          assert len(inventory["ncts"]) == inventory["nct_count"], "POOL NCT inventory mismatch"
+          assert len(set(inventory["ncts"])) == inventory["nct_count"], "Duplicate POOL NCT inventory"
+          assert report["attempted"] > 0, "No trials attempted"
+          assert report["collected"] + report["error_count"] == report["attempted"], "Collection count mismatch"
+          assert report["coverage_percent"] == round(100 * report["collected"] / report["attempted"], 2), "Coverage calculation mismatch"
+          if report["full_pool_collection_complete"]:
+              assert report["full_pool_run"] and report["error_count"] == 0
+              assert report["collected"] == report["pool_nct_count"]
+          print("Collection report verified; full_pool_collection_complete=" + str(report["full_pool_collection_complete"]))
+          PY
+      - name: Retain evidence and coverage report for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: avenue1-pool-clinical-evidence
+          path: artifacts/avenue1/
+          retention-days: 30
+          if-no-files-found: warn
