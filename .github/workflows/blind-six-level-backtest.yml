@@ -5,12 +5,16 @@ on:
       - feature/2026-blind-l1-183-backtest
     paths:
       - 'scripts/blind_six_levels_2026.py'
+      - 'scripts/report_blind_six_levels_2026.py'
       - 'tests/test_blind_six_levels_2026.py'
+      - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
   pull_request:
     paths:
       - 'scripts/blind_six_levels_2026.py'
+      - 'scripts/report_blind_six_levels_2026.py'
       - 'tests/test_blind_six_levels_2026.py'
+      - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
 permissions:
   contents: read
@@ -24,4 +28,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run six-level blind-backtest regression tests
-        run: python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
+          python -m unittest discover -s tests -p 'test_report_blind_six_levels_2026.py' -v

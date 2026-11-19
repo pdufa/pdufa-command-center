@@ -58,7 +58,8 @@ class BlindSixLevelTests(unittest.TestCase):
             w=csv.DictWriter(f,fieldnames=["event_id","actual_outcome"])
             w.writeheader();w.writerow({"event_id":"EXAMPLE-001","actual_outcome":"APPROVE"})
         result=self.run_script("score","--locked",self.locked,
-                               "--outcomes",self.outcomes,"--output",self.scored)
+                               "--outcomes",self.outcomes,"--output",self.scored,
+                               "--expected-lock-sha256", locked["lock_sha256"])
         self.assertEqual(result.returncode,0,result.stderr)
         self.assertTrue(all(x["accuracy"]==1 for x in json.loads(self.scored.read_text())))
 
@@ -95,9 +96,63 @@ class BlindSixLevelTests(unittest.TestCase):
             w=csv.DictWriter(f,fieldnames=["event_id","actual_outcome"])
             w.writeheader();w.writerow({"event_id":"EXAMPLE-001","actual_outcome":"APPROVE"})
         result=self.run_script("score","--locked",self.locked,
-                               "--outcomes",self.outcomes,"--output",self.scored)
+                               "--outcomes",self.outcomes,"--output",self.scored,
+                               "--expected-lock-sha256", data["lock_sha256"])
         self.assertNotEqual(result.returncode,0)
         self.assertIn("integrity failure",result.stderr)
+
+    def test_score_requires_external_digest(self):
+        self.write_events([self.row])
+        self.assertEqual(self.prepare().returncode, 0)
+        result = self.run_script(
+            "score", "--locked", self.locked, "--outcomes", self.outcomes,
+            "--output", self.scored,
+        )
+        self.assertIn("independently recorded lock digest", result.stderr)
+
+    def test_no_overwrite_of_frozen_lock(self):
+        self.write_events([self.row])
+        self.assertEqual(self.prepare().returncode, 0)
+        original = self.locked.read_bytes()
+        self.row["trial_design_valid"] = "NO"
+        self.write_events([self.row])
+        self.assertNotEqual(self.prepare().returncode, 0)
+        self.assertEqual(self.locked.read_bytes(), original)
+
+    def test_rejects_undeclared_and_ragged_manifest_columns(self):
+        self.row["decision_label"] = "APPROVE"
+        self.write_events([self.row])
+        self.assertIn("Unexpected blind manifest columns", self.prepare().stderr)
+        self.row.pop("decision_label")
+        self.write_events([self.row])
+        original = self.events.read_text()
+        self.events.write_text(original.rstrip("\n") + ",APPROVE\n")
+        self.assertIn("CSV row does not match the header width", self.prepare().stderr)
+
+    def test_lock_binds_features_rules_and_predictions(self):
+        self.row["trial_design_valid"] = "UNKNOWN"
+        self.row["inspection_risk_material"] = "YES"
+        self.write_events([self.row])
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        lock = json.loads(self.locked.read_text())
+        digest = lock["lock_sha256"]
+        self.assertEqual(lock["rule_set"], engine.EXPERIMENTAL_RULES)
+        predictions = {row["level"]: row for row in engine.verify_lock(lock, digest)}
+        self.assertEqual(predictions["L02"]["prediction"], "ABSTAIN")
+        self.assertEqual(predictions["L02"]["unknown_gates"], ["trial_design_valid"])
+        self.assertEqual(predictions["L05"]["prediction"], "CRL")
+        self.assertEqual(predictions["L05"]["failed_gates"], ["inspection_risk_material"])
+        self.assertEqual(predictions["L06"]["prediction"], "APPROVE")
+        lock["feature_snapshots"][0]["event"]["source_publication_date"] = "2026-08-21"
+        with self.assertRaisesRegex(ValueError, "integrity failure"):
+            engine.verify_lock(lock, digest)
+        lock.pop("lock_sha256")
+        lock["feature_snapshots_sha256"] = engine.canonical_digest(lock["feature_snapshots"])
+        lock["lock_sha256"] = engine.canonical_digest(lock)
+        with self.assertRaisesRegex(ValueError, "Frozen lock digest mismatch"):
+            engine.verify_lock(lock, digest)
+
 
 if __name__=="__main__":
     unittest.main()
