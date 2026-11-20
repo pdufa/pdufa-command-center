@@ -122,7 +122,7 @@ def _contains(text, phrase):
     return bool(re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", text, re.I))
 
 
-def _receipt(level, item, nct, conditions, cutoff, protocol, documents):
+def _receipt(level, item, nct, conditions, cutoff, protocol, documents, snapshot_captured_at):
     url = item.get("source_url")
     parsed = urlsplit(url if isinstance(url, str) else "")
     exact_protocol = level == 13 and parsed.hostname == "cdn.clinicaltrials.gov" and re.fullmatch(
@@ -133,6 +133,8 @@ def _receipt(level, item, nct, conditions, cutoff, protocol, documents):
             or not parsed.path or parsed.query or parsed.fragment):
         raise ValueError("Supplementary receipt needs an original FDA source or exact-trial registry PDF")
     published = _chronology(item.get("published_at"), item.get("captured_at"), cutoff)
+    if _capture(item.get("captured_at")) > _capture(snapshot_captured_at):
+        raise ValueError("Supplementary evidence was captured after the frozen registry snapshot")
     if not DIGEST.fullmatch(str(item.get("raw_sha256", ""))):
         raise ValueError("Supplementary original document SHA-256 receipt missing")
     body = item.get("text")
@@ -268,7 +270,7 @@ def assess_clinical_level(level, source, *, nct, cutoff=None, evidence=()):
             item = _mapping(item)
             try:
                 checked_item = _receipt(level, item, nct, conditions, today, protocol,
-                                        documents if isinstance(documents, list) else [])
+                                        documents if isinstance(documents, list) else [], source["captured_at"])
                 checked_item["raw_sha256"] = item["raw_sha256"]
                 checked.append(checked_item)
             except (ValueError, TypeError, UnicodeError) as exc:
