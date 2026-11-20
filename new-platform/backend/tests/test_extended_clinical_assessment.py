@@ -106,6 +106,23 @@ class AdvancedClinicalTest(unittest.TestCase):
         self.assertEqual(result["evidenceStatus"], "INSUFFICIENT_EVIDENCE")
         self.assertTrue(all(not item["citations"] for item in result["checks"]))
 
+    def test_regulatory_receipts_require_exact_application_and_cycle_in_source(self):
+        valid = receipt("FDA granted priority review.")
+        cases = [
+            {**valid, "application": "NDA 99999"},
+            {**valid, "cycle": "S-2"},
+            {**valid, "identity_excerpt": valid["identity_excerpt"].replace("NDA 12345", "NDA 99999")},
+            {**valid, "identity_excerpt": valid["identity_excerpt"].replace("Original 1", "S-2")},
+            {**valid, "source_url": "https://www.fda.gov.evil.example/document.pdf"},
+            {**valid, "source_url": "http://www.fda.gov/document.pdf"},
+        ]
+        for item in cases:
+            with self.subTest(item=item):
+                result = self.assess(14, [item])
+                self.assertEqual(len(result["rejectedEvidence"]), 1)
+                self.assertTrue(all(not check["citations"] for check in result["checks"]))
+                self.assertEqual(result["fdaPrediction"]["outcome"], "ABSTAIN")
+
     def test_original_document_digest_is_retained_for_each_regulatory_citation(self):
         item = receipt("FDA granted priority review.")
         result = self.assess(14, [item])
