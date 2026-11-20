@@ -106,6 +106,23 @@ class AdvancedClinicalTest(unittest.TestCase):
         self.assertEqual(result["evidenceStatus"], "INSUFFICIENT_EVIDENCE")
         self.assertTrue(all(not item["citations"] for item in result["checks"]))
 
+    def test_original_document_digest_is_retained_for_each_regulatory_citation(self):
+        item = receipt("FDA granted priority review.")
+        result = self.assess(14, [item])
+        citation = result["checks"][0]["citations"][0]
+        self.assertEqual(citation["raw_sha256"], item["raw_sha256"])
+        self.assertEqual(citation["text_sha256"], item["text_sha256"])
+
+    def test_missing_original_digest_never_becomes_checked_regulatory_evidence(self):
+        for level in (14, 15, 16):
+            with self.subTest(level=level):
+                item = receipt("FDA inspection and advisory committee priority review.")
+                item.pop("raw_sha256")
+                result = self.assess(level, [item])
+                self.assertEqual(len(result["rejectedEvidence"]), 1)
+                self.assertTrue(all(not check["citations"] for check in result["checks"]))
+                self.assertEqual(result["fdaPrediction"]["outcome"], "ABSTAIN")
+
     def test_exact_trial_protocol_can_support_subgroup_method(self):
         item = receipt("The subgroup analysis plan was prespecified.")
         item["source_url"] = f"https://cdn.clinicaltrials.gov/large-docs/01/{NCT}/Prot_001.pdf"
