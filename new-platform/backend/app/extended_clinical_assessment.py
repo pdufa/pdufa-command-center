@@ -133,6 +133,8 @@ def _receipt(level, item, nct, conditions, cutoff, protocol, documents):
             or not parsed.path or parsed.query or parsed.fragment):
         raise ValueError("Supplementary receipt needs an original FDA source or exact-trial registry PDF")
     published = _chronology(item.get("published_at"), item.get("captured_at"), cutoff)
+    if not DIGEST.fullmatch(str(item.get("raw_sha256", ""))):
+        raise ValueError("Supplementary original document SHA-256 receipt missing")
     body = item.get("text")
     if not isinstance(body, str) or sha256(body.encode()).hexdigest() != item.get("text_sha256"):
         raise ValueError("Supplementary extracted text digest mismatch")
@@ -267,8 +269,7 @@ def assess_clinical_level(level, source, *, nct, cutoff=None, evidence=()):
             try:
                 checked_item = _receipt(level, item, nct, conditions, today, protocol,
                                         documents if isinstance(documents, list) else [])
-                if DIGEST.fullmatch(str(item.get("raw_sha256", ""))):
-                    checked_item["raw_sha256"] = item["raw_sha256"]
+                checked_item["raw_sha256"] = item["raw_sha256"]
                 checked.append(checked_item)
             except (ValueError, TypeError, UnicodeError) as exc:
                 rejected.append({"state": "REJECTED_EVIDENCE", "reason": str(exc)})
