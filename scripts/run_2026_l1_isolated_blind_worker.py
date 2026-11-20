@@ -28,7 +28,10 @@ def run(root, predictor, locks):
     validator = Path(__file__).with_name("validate_2026_l1_blind100_packets.py")
     if not validator.is_file():
         die("strict packet validator missing")
-    check = subprocess.run([sys.executable, str(validator), str(root)],
+    with (root / "manifest.csv").open(newline="", encoding="utf-8") as manifest_file:
+        expected_count = sum(1 for _ in csv.DictReader(manifest_file))
+    check = subprocess.run([sys.executable, str(validator), str(root),
+                            "--expected-count", str(expected_count)],
                            capture_output=True, text=True)
     if check.returncode:
         die("evidence validation failed: " + (check.stderr or check.stdout)[-1000:])
