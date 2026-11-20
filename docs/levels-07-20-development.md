@@ -146,3 +146,18 @@ current evidence and supplied zero eligible blind forecasts.
 - FOCUS alignment and read-only evidence preflight passed. The retirement audit found zero active retired dependencies.
 - GitHub Actions: 13 of 13 reported PR-triggered workflows passed at the implementation commit.
 - The canonical November 18 FOCUS snapshot resolved the PR conflict. All 32 trial identities and evidence fields were preserved. The differing record fields were market capitalizations.
+
+## Regulatory supplementary-document integrity gate (development)
+
+Levels 13–16 now reject supplementary extraction receipts without a syntactically
+valid SHA-256 fingerprint of the original source document. Accepted citations
+retain both the original-document fingerprint and the extracted-text fingerprint;
+regression tests cover absent and malformed original-document fingerprints.
+
+**Acceptance limitation:** a supplied digest is not proof of original document
+authenticity unless the trusted collector also retains and independently hashes
+the original response bytes, verifies the publisher origin, and binds the exact
+application, indication, and review cycle. This change does not establish that
+FDA source receipts have been collected for the 32 FOCUS trials, and does not
+upgrade Level 14–16 evidence readiness or prediction accuracy. The new commits
+require fresh CI results before acceptance credit is awarded.
