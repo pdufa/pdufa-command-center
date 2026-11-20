@@ -70,8 +70,13 @@ def validate(root: Path, expected_count: int = 100):
             fail("invalid JSON: " + path.name)
         if set(packet) != PACKET_FIELDS or packet["case_id"] != row["case_id"]:
             fail("invalid packet schema for " + row["case_id"])
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", packet["evidence_cutoff"]):
-            fail("missing evidence cutoff: " + row["case_id"])
+        try:
+            cutoff = date.fromisoformat(packet["evidence_cutoff"])
+            goal = date.fromisoformat(packet["original_pdufa_goal_date"])
+        except (TypeError, ValueError):
+            fail("invalid cutoff or PDUFA goal date: " + row["case_id"])
+        if cutoff >= goal:
+            fail("evidence cutoff must precede PDUFA goal: " + row["case_id"])
         if not packet["application_id"] or not packet["indication"]:
             fail("application identity incomplete: " + row["case_id"])
         if not packet["sources"]:
