@@ -1,0 +1,3 @@
+case_id,drug,verification_status,application_id,pdufa_goal,indication,public_source,critical_note,blind_prediction
+BLIND-EXT-129,Bysanti,IDENTITY_CONFIRMED,NDA 220358,2026-02-21,Schizophrenia and bipolar I manic or mixed episodes,https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220358Orig1s000OtherR.pdf,FDA retrospective record used only for event identification; do not feed to predictor,NOT_ISSUED
+BLIND-EXT-143,Anaphylm,2026_EVENT_REQUIRES_RECONCILIATION,NDA resubmission,2027-03-16,Type I allergic reactions including anaphylaxis,https://www.sec.gov/Archives/edgar/data/1398733/000139873326000058/a2026-10x19aquestivepduf.htm,2027 resubmission is a different review cycle; source mentions earlier 2026 CRL and must not enter pre-2026 predictor packet,NOT_ISSUED
