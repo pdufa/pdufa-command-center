@@ -2,17 +2,8 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-19",
-  "reassessmentQueue": [
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cogt-gist",
-      "ncts": [
-        "NCT05208047"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    }
-  ],
+  "pacificDate": "2026-11-20",
+  "reassessmentQueue": [],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -22,17 +13,17 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-18",
-  "runAtUTC": "2026-11-19T15:39:57.652763+00:00",
+  "rosterSnapshotAsOf": "2026-11-19",
+  "runAtUTC": "2026-11-20T15:21:30.749642+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
     "focusTrials": 32,
-    "newOrChangedEvidenceTrials": 1,
+    "newOrChangedEvidenceTrials": 0,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 1,
+    "reassessmentQueueCycles": 0,
     "scientificAssessmentsRevalidated": 0,
     "sourceRetrieved": 32,
     "sourceUnavailable": 0,
@@ -359,7 +350,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cogent Biosciences, Inc.",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
