@@ -10,6 +10,7 @@ import csv
 import hashlib
 import json
 import re
+from datetime import date
 from pathlib import Path
 
 MANIFEST_COLUMNS = [
@@ -44,12 +45,14 @@ def validate(root: Path, expected_count: int = 100):
         rows = list(reader)
     if len(rows) != expected_count or len({r["case_id"] for r in rows}) != expected_count:
         fail(f"expected {expected_count} unique candidate IDs")
+    if any(not re.fullmatch(r"[A-Za-z0-9_-]+", r["case_id"] or "") for r in rows):
+        fail("invalid or unsafe case ID")
     if any(r["blind_prediction"] != "NOT_ISSUED" or
            r["prediction_lock_status"] != "NOT_LOCKED" for r in rows):
         fail("manifest includes previously issued predictions or locks")
     if any(r["application_identity_status"] != "VERIFIED" or
            r["precutoff_evidence_status"] != "VERIFIED" for r in rows):
-        fail("application identity or pre-cutoff evidence not verified for all 100")
+        fail("application identity or pre-cutoff evidence not verified for all candidates")
     evidence_dir = root / "evidence"
     if not evidence_dir.is_dir():
         fail("evidence/ missing")
@@ -76,7 +79,11 @@ def validate(root: Path, expected_count: int = 100):
         for source in packet["sources"]:
             if set(source) != {"url", "publication_date", "sha256"}:
                 fail("invalid source metadata: " + row["case_id"])
-            if source["publication_date"] > packet["evidence_cutoff"]:
+            try:
+                published = date.fromisoformat(source["publication_date"])
+            except (TypeError, ValueError):
+                fail("invalid source date: " + row["case_id"])
+            if published > cutoff:
                 fail("post-cutoff source: " + row["case_id"])
             if not re.fullmatch(r"[0-9a-f]{64}", source["sha256"]):
                 fail("source hash invalid: " + row["case_id"])
