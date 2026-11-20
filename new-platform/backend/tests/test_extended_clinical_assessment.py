@@ -37,6 +37,7 @@ def receipt(excerpt, *, cycle="Original 1", trial=NCT, indication="Example condi
     text = f"Overview.\n\n{section}\n\nAppendix."
     return {
         "source_url": f"https://www.fda.gov/{path}", "text": text, "text_sha256": digest(text),
+        "raw_sha256": digest("original FDA source document"),
         "identity_excerpt": section, "excerpt": excerpt, "locator": "page 4",
         "indication": indication, "application": "NDA 12345", "cycle": cycle,
         "published_at": "2025-01-01", "captured_at": "2025-01-02T00:00:00Z",
@@ -91,6 +92,8 @@ class AdvancedClinicalTest(unittest.TestCase):
         invalid = [
             {**valid, "source_url": "https://www.fda.gov@fake.example/document.pdf"},
             {**valid, "text": valid["text"] + "Changed after capture."},
+            {**valid, "raw_sha256": None},
+            {**valid, "raw_sha256": "not-a-digest"},
             receipt(valid["excerpt"], trial="NCT00000002"),
             {**valid, "excerpt": "The committee voted unanimously."},
             {**valid, "cycle": "S-2"},
