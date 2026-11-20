@@ -137,6 +137,13 @@ def _receipt(level, item, nct, conditions, cutoff, protocol, documents, snapshot
         raise ValueError("Supplementary evidence was captured after the frozen registry snapshot")
     if not DIGEST.fullmatch(str(item.get("raw_sha256", ""))):
         raise ValueError("Supplementary original document SHA-256 receipt missing")
+    # When the collector supplies original bytes, verify their digest rather
+    # than accepting an uncorroborated checksum claim. The collector must still
+    # establish the URL and publication provenance independently.
+    raw_bytes = item.get("raw_bytes")
+    if raw_bytes is not None:
+        if not isinstance(raw_bytes, bytes) or sha256(raw_bytes).hexdigest() != item["raw_sha256"]:
+            raise ValueError("Supplementary original document bytes digest mismatch")
     body = item.get("text")
     if not isinstance(body, str) or sha256(body.encode()).hexdigest() != item.get("text_sha256"):
         raise ValueError("Supplementary extracted text digest mismatch")
