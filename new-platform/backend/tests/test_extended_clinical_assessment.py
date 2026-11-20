@@ -123,6 +123,17 @@ class AdvancedClinicalTest(unittest.TestCase):
                 self.assertTrue(all(not check["citations"] for check in result["checks"]))
                 self.assertEqual(result["fdaPrediction"]["outcome"], "ABSTAIN")
 
+    def test_later_supplementary_capture_cannot_leak_into_frozen_snapshot(self):
+        for level in (13, 14, 15, 16):
+            with self.subTest(level=level):
+                item = receipt("FDA priority review and subgroup analyses were described.")
+                item["captured_at"] = "2025-01-03T00:00:00Z"
+                result = self.assess(level, [item])
+                self.assertEqual(len(result["rejectedEvidence"]), 1)
+                self.assertIn("after the frozen registry snapshot", result["rejectedEvidence"][0]["reason"])
+                self.assertTrue(all(not check["citations"] for check in result["checks"]))
+                self.assertEqual(result["fdaPrediction"]["outcome"], "ABSTAIN")
+
     def test_original_document_digest_is_retained_for_each_regulatory_citation(self):
         item = receipt("FDA granted priority review.")
         result = self.assess(14, [item])
