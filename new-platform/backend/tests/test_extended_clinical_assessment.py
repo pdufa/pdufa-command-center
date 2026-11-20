@@ -87,6 +87,20 @@ class AdvancedClinicalTest(unittest.TestCase):
         result = self.assess(13, [first, second])
         self.assertEqual(result["checks"][2]["state"], "UNRESOLVED_INDICATION_SCOPE")
 
+    def test_original_fda_bytes_are_checked_when_collector_provides_them(self):
+        valid = receipt("FDA granted priority review.")
+        valid["raw_bytes"] = b"original FDA source document"
+        accepted = self.assess(14, [valid])
+        self.assertEqual(accepted["checks"][0]["state"], "SOURCE_PASSAGE_CHECKED")
+        self.assertEqual(accepted["checks"][0]["citations"][0]["raw_sha256"], valid["raw_sha256"])
+        self.assertNotIn("raw_bytes", accepted["checks"][0]["citations"][0])
+        for corrupted in (b"altered original", "original FDA source document"):
+            with self.subTest(corrupted=corrupted):
+                result = self.assess(14, [{**valid, "raw_bytes": corrupted}])
+                self.assertEqual(len(result["rejectedEvidence"]), 1)
+                self.assertIn("bytes digest mismatch", result["rejectedEvidence"][0]["reason"])
+                self.assertTrue(all(not check["citations"] for check in result["checks"]))
+
     def test_source_independently_checked_before_a_passage_is_used(self):
         valid = receipt("The committee voted on the question.")
         invalid = [
