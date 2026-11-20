@@ -23,6 +23,12 @@ on:
       - 'new-platform/frontend/app/api/assessments/runtime/**'
       - 'new-platform/frontend/tests/assessment-runtime.test.cjs'
       - '.github/workflows/assessment-runtime-tests.yml'
+  push:
+    branches: [feature/levels-07-20-development]
+    paths:
+      - 'new-platform/backend/app/extended_*assessment.py'
+      - 'new-platform/backend/tests/test_extended_*.py'
+      - '.github/workflows/assessment-runtime-tests.yml'
   workflow_dispatch:
 permissions:
   contents: read
