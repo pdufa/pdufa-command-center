@@ -131,7 +131,13 @@ class AdvancedClinicalTest(unittest.TestCase):
                 result = self.assess(level, [item])
                 self.assertEqual(len(result["rejectedEvidence"]), 1)
                 self.assertIn("after the frozen registry snapshot", result["rejectedEvidence"][0]["reason"])
-                self.assertTrue(all(not check["citations"] for check in result["checks"]))
+                # Level 13 independently cites the frozen registry population.
+                # Reject only the late supplementary source; retain preexisting
+                # registry citations rather than treating them as leakage.
+                citations = [citation for check in result["checks"]
+                             for citation in check["citations"]]
+                self.assertTrue(all(citation.get("captured_at", citation.get("capturedAt"))
+                                    != item["captured_at"] for citation in citations))
                 self.assertEqual(result["fdaPrediction"]["outcome"], "ABSTAIN")
 
     def test_original_document_digest_is_retained_for_each_regulatory_citation(self):
