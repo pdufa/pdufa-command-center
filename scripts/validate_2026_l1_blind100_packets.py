@@ -31,7 +31,9 @@ FORBIDDEN = re.compile(
 def fail(message):
     raise SystemExit("BLOCKED: " + message)
 
-def validate(root: Path):
+def validate(root: Path, expected_count: int = 100):
+    if expected_count < 1:
+        fail("expected count must be positive")
     manifest = root / "manifest.csv"
     if not manifest.is_file():
         fail("manifest.csv missing")
@@ -40,8 +42,8 @@ def validate(root: Path):
         if reader.fieldnames != MANIFEST_COLUMNS:
             fail("manifest schema changed")
         rows = list(reader)
-    if len(rows) != 100 or len({r["case_id"] for r in rows}) != 100:
-        fail("expected 100 unique candidate IDs")
+    if len(rows) != expected_count or len({r["case_id"] for r in rows}) != expected_count:
+        fail(f"expected {expected_count} unique candidate IDs")
     if any(r["blind_prediction"] != "NOT_ISSUED" or
            r["prediction_lock_status"] != "NOT_LOCKED" for r in rows):
         fail("manifest includes previously issued predictions or locks")
@@ -80,7 +82,7 @@ def validate(root: Path):
                 fail("source hash invalid: " + row["case_id"])
         packet_hashes.append((row["case_id"], hashlib.sha256(data).hexdigest()))
     print(json.dumps({"status": "PACKETS_SCHEMA_VALIDATED",
-                      "candidate_count": 100,
+                      "candidate_count": expected_count,
                       "packet_sha256": dict(packet_hashes),
                       "warning": "Does NOT certify reviewer isolation or historical blindness"},
                      indent=2))
@@ -88,4 +90,6 @@ def validate(root: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path, help="outcome-isolated input folder")
-    validate(parser.parse_args().root)
+    parser.add_argument("--expected-count", type=int, default=100)
+    args = parser.parse_args()
+    validate(args.root, args.expected_count)
