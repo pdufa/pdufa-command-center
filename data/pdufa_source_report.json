@@ -1,13 +1,13 @@
 {
   "combined_verification_ledger": "combined_verification.csv",
-  "combined_verification_ledger_sha256": "62d0cd462025dfa5ebd5703b332cca61c3209e44317e8c5a93f8908e6d124e29",
+  "combined_verification_ledger_sha256": "6de88460e29971237fb00cafbc8a4ba5a0c466b68478ea9fa9ee69a0c2f5211b",
   "comparison": {
     "available": true,
     "net_reduction": 0,
     "new_count": 0,
     "new_examples": [],
     "previous_remaining": 29,
-    "previous_run_id": "44236034388",
+    "previous_run_id": "44457032856",
     "resolved_count": 0,
     "resolved_examples": [],
     "status_changed_count": 0,
@@ -21,8 +21,8 @@
   "findings_unresolved": 25,
   "findings_verified": 987,
   "full_coverage_verified": false,
-  "latest_run_id": "44457032856",
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44457032856",
+  "latest_run_id": "44673169211",
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44673169211",
   "manifest_rejections": {},
   "missing_required_source_families": [
     "FDA",
@@ -36,7 +36,7 @@
     "leads_checked": 15,
     "results": [
       {
-        "checked_at_utc": "2026-11-19T04:32:31.081823+00:00",
+        "checked_at_utc": "2026-11-20T04:32:27.815035+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Closing-of-Public-Offering-of-Common-Stock-and-Full-Exercise-of-the-Underwriters-Option-to-Purchase-Additional-Shares-for-Gross-Proceeds-of-805-Million/default.aspx",
         "event_key": "CYTK|MYQORZO_HCM_20261114",
@@ -44,13 +44,13 @@
         "ir_close_date": "2026-05-08",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "d38aacc4745e2b1487b1fb4b3bb28ff2146fdf8060f626829abfe5b0b10a225b",
+        "sec_sha256": "e7966eab4e31d55067c2ba7829d3f28c1feebedab9ae13b1d281c14dc1b78daf",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
         "ticker": "CYTK",
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:33.725198+00:00",
+        "checked_at_utc": "2026-11-20T04:32:30.138358+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://smmttx.com/news/press-releases/news-details/2026/AstraZeneca-Completes-2-Billion-Equity-Investment-in-Summit-Therapeutics/default.aspx",
         "event_key": "SMMT|IVONESCIMAB_20261114",
@@ -64,7 +64,7 @@
         "transaction_type": "PREFERRED_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:40.015375+00:00",
+        "checked_at_utc": "2026-11-20T04:32:35.468675+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://ir.mineralystx.com/news-events/press-releases/detail/64/mineralys-therapeutics-announces-closing-of-underwriters",
         "event_key": "MLYS|LORUNDROSTAT_20261222",
@@ -78,7 +78,7 @@
         "transaction_type": "UNDERWRITER_OPTION"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:42.005361+00:00",
+        "checked_at_utc": "2026-11-20T04:32:37.435146+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://ir.mineralystx.com/news-events/press-releases/detail/79/mineralys-therapeutics-announces-closing-of-upsized-287-5",
         "event_key": "MLYS|LORUNDROSTAT_20261222",
@@ -92,7 +92,7 @@
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:50.750463+00:00",
+        "checked_at_utc": "2026-11-20T04:32:44.456081+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.dyne-tx.com/news-releases/news-release-details/dyne-therapeutics-announces-closing-public-offering-common-1/",
         "event_key": "DYN|ZROSTUDIRSEN_DMD_20270121",
@@ -106,7 +106,7 @@
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:56.188513+00:00",
+        "checked_at_utc": "2026-11-20T04:32:50.465009+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.dyne-tx.com/news-and-events/press-releases",
         "event_key": "DYN|ZROSTUDIRSEN_DMD_20270121",
@@ -120,7 +120,7 @@
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:58.476096+00:00",
+        "checked_at_utc": "2026-11-20T04:32:52.895046+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-closing-upsized-public-offering-2",
         "event_key": "COGT|BEZUCLASTINIB_GIST_20261130",
@@ -128,13 +128,13 @@
         "ir_close_date": "2025-07-10",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "2949bb4ce8234c5458d9a2ba3905da602a0d778ce7c5dfeeba7641d52386b0ec",
+        "sec_sha256": "9c2756b1eac770c88ec32e1b40ada27f48cf778368180777f1c4245ecbfe5af4",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025102440/cogt-20250630.htm",
         "ticker": "COGT",
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:59.173541+00:00",
+        "checked_at_utc": "2026-11-20T04:32:53.469071+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.cogentbio.com/static-files/f5383f24-2ab8-47f6-8939-18797498735f",
         "event_key": "COGT|BEZUCLASTINIB_GIST_20261130",
@@ -142,13 +142,13 @@
         "ir_close_date": "2025-11-18",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "1c6bd5847d9f9ccb1d4dd22a0f267d7d3f8cfd1adc223fe8bb7ffa6f53d6da11",
+        "sec_sha256": "6c6472624ea4341737dd11759fe2f6e4b287ecfcbc59510e0706a8e217113136",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
         "ticker": "COGT",
         "transaction_type": "CONVERTIBLE_NOTES"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:59.194956+00:00",
+        "checked_at_utc": "2026-11-20T04:32:53.490787+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-closing-upsized-public-offering-2",
         "event_key": "COGT|BEZUCLASTINIB_ADVSM_20270629",
@@ -156,13 +156,13 @@
         "ir_close_date": "2025-07-10",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "2949bb4ce8234c5458d9a2ba3905da602a0d778ce7c5dfeeba7641d52386b0ec",
+        "sec_sha256": "9c2756b1eac770c88ec32e1b40ada27f48cf778368180777f1c4245ecbfe5af4",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025102440/cogt-20250630.htm",
         "ticker": "COGT",
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:32:59.198727+00:00",
+        "checked_at_utc": "2026-11-20T04:32:53.494969+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.cogentbio.com/static-files/f5383f24-2ab8-47f6-8939-18797498735f",
         "event_key": "COGT|BEZUCLASTINIB_ADVSM_20270629",
@@ -170,13 +170,13 @@
         "ir_close_date": "2025-11-18",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "1c6bd5847d9f9ccb1d4dd22a0f267d7d3f8cfd1adc223fe8bb7ffa6f53d6da11",
+        "sec_sha256": "6c6472624ea4341737dd11759fe2f6e4b287ecfcbc59510e0706a8e217113136",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
         "ticker": "COGT",
         "transaction_type": "CONVERTIBLE_NOTES"
       },
       {
-        "checked_at_utc": "2026-11-19T04:33:06.110307+00:00",
+        "checked_at_utc": "2026-11-20T04:32:58.501821+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-announces-closing-upsized-initial-public-offering",
         "event_key": "APMD|OXNIMBI_OSA_20270228",
@@ -190,7 +190,7 @@
         "transaction_type": "IPO"
       },
       {
-        "checked_at_utc": "2026-11-19T04:33:06.411965+00:00",
+        "checked_at_utc": "2026-11-20T04:32:59.323490+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-closing-1323-million-underwritten-offering",
         "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
@@ -198,13 +198,13 @@
         "ir_close_date": "2026-05-11",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "2aa59c652f194fa211d597bff17b229f1fd4622223ce55245e8a3cc7cc21183a",
+        "sec_sha256": "08788df1dce886d275aac871e42789fbad7ea1b5c2daf25de515774765fe040a",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526216957/d134419d6k.htm",
         "ticker": "PHVS",
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:33:12.037380+00:00",
+        "checked_at_utc": "2026-11-20T04:33:04.946651+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.arcutis.com/news-releases/news-release-details/arcutis-announces-closing-public-offering-common-stock-and-full",
         "event_key": "ARQT|ZORYVE_AD_20270223",
@@ -218,7 +218,7 @@
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:33:13.714427+00:00",
+        "checked_at_utc": "2026-11-20T04:33:06.581463+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://investors.immunome.com/immunome-announces-closing-of-upsized-public-offering-and-full-exercise-of-underwriters-option-to-purchase-additional-shares/",
         "event_key": "IMNM|VAREGACESTAT_DESMOID_20270428",
@@ -226,13 +226,13 @@
         "ir_close_date": "2025-01-31",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "7b6046ca5da251adf7c7340c67e427bb8fc0a26246b797096794857ce77c3eae",
+        "sec_sha256": "20e93a0232e10b9c57a3e3c4c86cb25ba06db47dc616f9898258a20ea56011ed",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1472012/000155837025003302/tmb-20241231x10k.htm",
         "ticker": "IMNM",
         "transaction_type": "PUBLIC_EQUITY"
       },
       {
-        "checked_at_utc": "2026-11-19T04:33:13.961142+00:00",
+        "checked_at_utc": "2026-11-20T04:33:06.902182+00:00",
         "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "company_ir_url": "https://www.biomarin.com/news/press-releases/biomarin-announces-closing-of-private-offering-of-senior-notes/",
         "event_key": "BMRN|VOXZOGO_ACHONDROPLASIA_20270228",
@@ -240,7 +240,7 @@
         "ir_close_date": "2026-02-12",
         "reason": "SEC independently confirms this specific dated transaction ONLY; separate post-Phase-3 first/second financing sequence NOT verified",
         "sec_recheck_status": "SEC_TRANSACTION_VERIFIED",
-        "sec_sha256": "97c8b6c830d9134b5d3d8a688c089cf8b4a0116262fdf185ac0ebb72adaa7ad0",
+        "sec_sha256": "2d7ace4c1a11ad80053d10c595d8f0c70e2d863783a6e8e7c31e0642b3216720",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1048477/000119312526048736/d63881d8k.htm",
         "ticker": "BMRN",
         "transaction_type": "DEBT_NOT_PROGRAM_EQUITY"
@@ -254,7 +254,7 @@
   "required_issue_examples": [
     {
       "category": "FDA",
-      "checked_at": "2026-11-19T04:25:44.359659+00:00",
+      "checked_at": "2026-11-20T04:26:06.162259+00:00",
       "claim": "PDUFA_TARGET",
       "claim_input_sha256": "",
       "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
@@ -271,7 +271,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-11-19T04:25:51.818712+00:00",
+      "checked_at": "2026-11-20T04:26:16.382130+00:00",
       "claim": "PDUFA_TARGET",
       "claim_input_sha256": "",
       "event_key": "AGIO|MITAPIVAT_SCD_20261101",
@@ -288,7 +288,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-11-19T04:25:52.454827+00:00",
+      "checked_at": "2026-11-20T04:26:17.282311+00:00",
       "claim": "PDUFA_TARGET",
       "claim_input_sha256": "",
       "event_key": "CYTK|MYQORZO_HCM_20261114",
@@ -297,7 +297,7 @@
       "monitor_index_sha256": "",
       "observed": "2026-11-14",
       "reason": "Original target date confirmed, but target has passed and the final outcome remains unresolved",
-      "source_sha256": "f45645b33e4845a6f443f19360ca973a6b0f530147c37a86b9bed98f9a750320",
+      "source_sha256": "2874043510887f2c56a6ea5d4e5c754c5433c334932f23b7e8c8025330843d89",
       "source_url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
       "ticker": "CYTK",
       "verification_required": "YES",
@@ -305,7 +305,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-11-19T04:25:56.892517+00:00",
+      "checked_at": "2026-11-20T04:26:22.899054+00:00",
       "claim": "PDUFA_TARGET",
       "claim_input_sha256": "",
       "event_key": "SMMT|IVONESCIMAB_20261114",
@@ -314,7 +314,7 @@
       "monitor_index_sha256": "",
       "observed": "2026-11-14",
       "reason": "Original target date confirmed, but target has passed and the final outcome remains unresolved",
-      "source_sha256": "c81c2eac00d51b50068f20da6b7fede935621909e074d6951afdeba227e17fb6",
+      "source_sha256": "e37c5f6899d16a6dc486fe5953d6c50c49a7a1a84b6395f936c7d5240ddd8215",
       "source_url": "https://smmttx.com/news/press-releases/news-details/2026/Summit-Therapeutics-Announces-U-S--FDA-Acceptance-of-Biologics-License-Application-BLA-Seeking-Approval-for-Ivonescimab-in-Combination-with-Chemotherapy-in-Treatment-of-Patients-with-EGFRm-NSCLC-Post-TKI-Therapy/default.aspx",
       "ticker": "SMMT",
       "verification_required": "YES",
@@ -322,7 +322,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:28:22.348027+00:00",
+      "checked_at": "2026-11-20T04:28:38.097783+00:00",
       "claim": "FILINGS_INVENTORY",
       "claim_input_sha256": "",
       "event_key": "REGISTRY:ADIL",
@@ -339,7 +339,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:31:20.074814+00:00",
+      "checked_at": "2026-11-20T04:31:30.559263+00:00",
       "claim": "FILINGS_INVENTORY",
       "claim_input_sha256": "",
       "event_key": "REGISTRY:QNCX",
@@ -348,7 +348,7 @@
       "monitor_index_sha256": "",
       "observed": "",
       "reason": "SEC response does not identify the requested ticker",
-      "source_sha256": "22bba969936d122fbc90ab2db10c72f384f29519acf0cd18b68a54cc857bd299",
+      "source_sha256": "8f5fff5ce74617a17deb0a2d57d7b092086c5c7c4656cbbc247f7169c9973525",
       "source_url": "https://data.sec.gov/submissions/CIK0001662774.json",
       "ticker": "QNCX",
       "verification_required": "YES",
@@ -356,7 +356,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:31:47.604891+00:00",
+      "checked_at": "2026-11-20T04:31:55.110112+00:00",
       "claim": "FILINGS_INVENTORY",
       "claim_input_sha256": "",
       "event_key": "REGISTRY:SUPN",
@@ -373,7 +373,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:31:50.824023+00:00",
+      "checked_at": "2026-11-20T04:31:58.104411+00:00",
       "claim": "FILINGS_INVENTORY",
       "claim_input_sha256": "",
       "event_key": "REGISTRY:TBPH",
@@ -390,7 +390,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:24.131837+00:00",
+      "checked_at": "2026-11-20T04:32:23.350107+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "AGIO|MITAPIVAT_SCD_20261101",
@@ -407,7 +407,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:24.938716+00:00",
+      "checked_at": "2026-11-20T04:32:23.350167+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "CAPR|DERAMIOCEL_DMD_20261122",
@@ -424,7 +424,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.167660+00:00",
+      "checked_at": "2026-11-20T04:32:23.594361+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "VRTX|POVETACICEPT_IGAN_20261130",
@@ -441,7 +441,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.167678+00:00",
+      "checked_at": "2026-11-20T04:32:23.594380+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "ZLAB|POVETACICEPT_IGAN_20261130",
@@ -458,7 +458,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.167689+00:00",
+      "checked_at": "2026-11-20T04:32:23.594394+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
@@ -475,7 +475,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.167700+00:00",
+      "checked_at": "2026-11-20T04:32:23.594405+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "CORT|RELACORILANT_CUSHINGS_20261217",
@@ -492,7 +492,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.167753+00:00",
+      "checked_at": "2026-11-20T04:32:23.594461+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "GILD|ANITOCEL_MM_20261223",
@@ -509,7 +509,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.500180+00:00",
+      "checked_at": "2026-11-20T04:32:23.594555+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "IBRX|ANKTIVA_NMIBC_20270106",
@@ -526,7 +526,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.847697+00:00",
+      "checked_at": "2026-11-20T04:32:23.594591+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "ARQT|ZORYVE_AD_20270223",
@@ -543,7 +543,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.847720+00:00",
+      "checked_at": "2026-11-20T04:32:23.594601+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "CGEM|ZIPALERTINIB_NSCLC_20270227",
@@ -560,7 +560,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:25.847734+00:00",
+      "checked_at": "2026-11-20T04:32:23.594611+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "APMD|OXNIMBI_OSA_20270228",
@@ -577,7 +577,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:26.229984+00:00",
+      "checked_at": "2026-11-20T04:32:23.944381+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "EXEL|ZANZALINTINIB_CRC",
@@ -594,7 +594,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:26.230019+00:00",
+      "checked_at": "2026-11-20T04:32:23.944419+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "HRMY|PITOLISANT_GR_20270401",
@@ -611,7 +611,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:26.566796+00:00",
+      "checked_at": "2026-11-20T04:32:24.317863+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "AXSM|AXS12_CATAPLEXY_20270501",
@@ -620,7 +620,7 @@
       "monitor_index_sha256": "",
       "observed": "",
       "reason": "No completed transaction clause matches the stored closing date",
-      "source_sha256": "5967d16bb21288b0588c6bdfaba2856aaf0d40ee3f8570fffc60ceef22e0bd1e",
+      "source_sha256": "986d1eaab0e00c337dd2e631f4604048cede4e4cac95b302ac53d1bd3d33410f",
       "source_url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526342360/axsm-20260630.htm",
       "ticker": "AXSM",
       "verification_required": "YES",
@@ -628,7 +628,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:26.675556+00:00",
+      "checked_at": "2026-11-20T04:32:24.442651+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "BMY|MEZIGDOMIDE_RRMM_20270513",
@@ -645,7 +645,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-11-19T04:32:27.612075+00:00",
+      "checked_at": "2026-11-20T04:32:24.442737+00:00",
       "claim": "FINANCING_CLOSURE",
       "claim_input_sha256": "",
       "event_key": "PHAR|JOENJA_LOWER_DOSE_APDS_20270130",
@@ -666,8 +666,8 @@
   "scope_coverage_verified": false,
   "sec_filing_watch_rows": 10569,
   "sec_filing_watch_status": "PUBLISHED_INDEX_ONLY",
-  "source_checked_at_utc": "2026-11-19T04:37:16.734714+00:00",
-  "source_commit": "0cf30277c92fd95edfaaf4288fb81279b746f621",
+  "source_checked_at_utc": "2026-11-20T04:37:02.389276+00:00",
+  "source_commit": "b38118fd6b15dba45fb37c4e0b3044b62b469c5b",
   "source_statuses": {
     "FDA": "PARTIAL",
     "FINANCIAL": "PARTIAL",
@@ -777,7 +777,7 @@
   "supplemental_issue_examples": [
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:20.760252+00:00",
+      "checked_at": "2026-11-20T04:35:16.160707+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
@@ -794,7 +794,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:20.760285+00:00",
+      "checked_at": "2026-11-20T04:35:16.160727+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
@@ -811,7 +811,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.054090+00:00",
+      "checked_at": "2026-11-20T04:35:16.299756+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "SRRK|APITEGROMAB_20260930",
@@ -828,7 +828,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.054099+00:00",
+      "checked_at": "2026-11-20T04:35:16.299763+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "SRRK|APITEGROMAB_20260930",
@@ -845,7 +845,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.391283+00:00",
+      "checked_at": "2026-11-20T04:35:16.532658+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
@@ -862,7 +862,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.391290+00:00",
+      "checked_at": "2026-11-20T04:35:16.532665+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
@@ -879,7 +879,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.641681+00:00",
+      "checked_at": "2026-11-20T04:35:16.749196+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
@@ -896,7 +896,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.641687+00:00",
+      "checked_at": "2026-11-20T04:35:16.749203+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
@@ -913,7 +913,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.941262+00:00",
+      "checked_at": "2026-11-20T04:35:16.909867+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
@@ -930,7 +930,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:21.941268+00:00",
+      "checked_at": "2026-11-20T04:35:16.909873+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
@@ -947,7 +947,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:22.178123+00:00",
+      "checked_at": "2026-11-20T04:35:17.043530+00:00",
       "claim": "OPTIONS_IV",
       "claim_input_sha256": "",
       "event_key": "INO|INO3107_RRP_20261030",
@@ -964,7 +964,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-11-19T04:35:22.178129+00:00",
+      "checked_at": "2026-11-20T04:35:17.043537+00:00",
       "claim": "BORROW",
       "claim_input_sha256": "",
       "event_key": "INO|INO3107_RRP_20261030",
@@ -980,15 +980,8 @@
       "verification_status": "UNAVAILABLE"
     }
   ],
-  "updated_at_utc": "2026-11-19T04:37:58.013864+00:00",
+  "updated_at_utc": "2026-11-20T04:37:44.508468+00:00",
   "verification_history": [
-    {
-      "checked_at_utc": "2026-10-25T04:05:18.047135+00:00",
-      "remaining": 25,
-      "required": 986,
-      "run_id": "40159947319",
-      "status": "PARTIAL"
-    },
     {
       "checked_at_utc": "2026-10-25T16:22:23.119414+00:00",
       "remaining": 23,
@@ -1191,6 +1184,13 @@
       "required": 986,
       "run_id": "44457032856",
       "status": "PARTIAL"
+    },
+    {
+      "checked_at_utc": "2026-11-20T04:37:02.389276+00:00",
+      "remaining": 29,
+      "required": 986,
+      "run_id": "44673169211",
+      "status": "PARTIAL"
     }
   ],
   "verification_issue_examples": [
@@ -1279,7 +1279,7 @@
       "verification_status": "REVIEW_REQUIRED"
     }
   ],
-  "verification_run_id": "44457032856:1:0cf30277c92fd95edfaaf4288fb81279b746f621",
+  "verification_run_id": "44673169211:1:b38118fd6b15dba45fb37c4e0b3044b62b469c5b",
   "verification_scope_sha256": "fc5c127d77ddd46320ca79359c05abb19d3eca0b6610a1ea897f7895a4dc3913",
   "verification_status_counts": {
     "CONFLICT": 4,
