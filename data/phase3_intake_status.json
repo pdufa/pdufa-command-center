@@ -1,25 +1,41 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-20T04:24:35.822890+00:00",
+  "started_at": "2026-11-21T04:23:05.240971+00:00",
   "registry_companies": 717,
   "pages": 5,
-  "studies_checked": 4042,
-  "matched_posted_results": 100,
-  "new_records": 1,
+  "studies_checked": 4075,
+  "matched_posted_results": 103,
+  "new_records": 3,
   "new_record_details": [
     {
-      "ticker": "PFE",
-      "drug": "Inclacumab",
-      "nct_id": "NCT05348915",
-      "results_posted_at": "2026-11-19",
-      "source_url": "https://clinicaltrials.gov/study/NCT05348915",
+      "ticker": "UTHR",
+      "drug": "Inhaled Treprostinil | Placebo",
+      "nct_id": "NCT04708782",
+      "results_posted_at": "2026-11-20",
+      "source_url": "https://clinicaltrials.gov/study/NCT04708782",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    },
+    {
+      "ticker": "AZN",
+      "drug": "Benralizumab | Placebo",
+      "nct_id": "NCT04053634",
+      "results_posted_at": "2026-11-20",
+      "source_url": "https://clinicaltrials.gov/study/NCT04053634",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    },
+    {
+      "ticker": "AMGN",
+      "drug": "Apremilast",
+      "nct_id": "NCT04175613",
+      "results_posted_at": "2026-11-20",
+      "source_url": "https://clinicaltrials.gov/study/NCT04175613",
       "verification_status": "REGISTERED_RESULTS_POSTED"
     }
   ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-20T04:24:47.753917+00:00",
-  "stored_results": 2507,
+  "finished_at": "2026-11-21T04:23:10.040570+00:00",
+  "stored_results": 2510,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
