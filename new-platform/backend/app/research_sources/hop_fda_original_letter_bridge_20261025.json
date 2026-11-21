@@ -1,0 +1,51 @@
+{
+  "application_link_does_not_establish_same_review_cycle": true,
+  "approval_rate": null,
+  "comparison_cutoff": "2026-10-25",
+  "complete_nda_bla_decision_denominator_verified": false,
+  "distinct_nda_bla_applications_in_approval_centric_spine": 5973,
+  "distinct_original_spine_applications_referenced_by_published_letters": 238,
+  "drugsfda_source_applications_sha256": "f7fc18dcc826b74b250f7c87d1d9e4b04b56207fc9eac882801a64745a388dd6",
+  "drugsfda_source_submissions_sha256": "d74236b31ebe27ce80f529c6d7b6921f9ca95029d91fd92a30bdd95aaf0b3d00",
+  "fda_published_letter_export_date": "2026-10-21",
+  "independently_verified_fda_review_cycles": 0,
+  "matched_letter_references_with_multiple_original_submission_numbers": 11,
+  "matched_original_spine_applications_with_repeated_letter_references": 63,
+  "model_eligible_records": 0,
+  "no_live_scanner_or_model_action": true,
+  "no_raw_applications_or_letters_exported": true,
+  "original_drugsfda_source_approval_centric": true,
+  "original_nda_bla_submission_history_rows": 6033,
+  "pinned_original_submissions_audit_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40246351051",
+  "prediction_accuracy": null,
+  "prediction_probability": null,
+  "published_crl_corpus_selectively_released": true,
+  "published_letter_reference_link_states": {
+    "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION": 17,
+    "ANDA_OUT_OF_STUDY_SCOPE": 0,
+    "NDA_BLA_APPLICATION_IN_ORIGINAL_SUBMISSION_SPINE": 334,
+    "NDA_BLA_APPLICATION_NOT_IN_ORIGINAL_SUBMISSION_SPINE": 107
+  },
+  "published_letter_references": 458,
+  "published_letter_type_counts": {
+    "COMPLETE RESPONSE": 445,
+    "CORRECTED PROVISIONAL DETERMINATION": 1,
+    "PROVISIONAL DETERMINATION": 1,
+    "REFUSAL TO FILE": 1,
+    "RESCIND COMPLETE RESPONSE": 1,
+    "TENTATIVE APPROVAL": 4,
+    "UNCLASSIFIED": 5
+  },
+  "readiness": "REVIEW_REQUIRED",
+  "source_crl_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "source_crl_snapshot_status": "PUBLICATION_CORPUS_ONLY_NOT_MODEL_ELIGIBLE",
+  "status": "NDA_BLA_ORIGINAL_SUBMISSION_LETTER_IDENTITY_CROSSWALK_ONLY",
+  "textual_original_qualifier_comparison_counts": {
+    "ORIGINAL_QUALIFIER_MATCHES_SUBMISSION_NUMBER_TEXT_ONLY": 7,
+    "ORIGINAL_QUALIFIER_NOT_IN_SPINE_REQUIRES_REVIEW": 3
+  },
+  "unmatched_record_does_not_prove_never_approved": true,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40247135687",
+  "run_aggregate_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40247135687/artifacts/12618459836",
+  "source_snapshot_staged_only": true
+}

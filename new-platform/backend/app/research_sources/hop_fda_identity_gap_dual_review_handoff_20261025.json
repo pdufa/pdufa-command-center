@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "BLANK_DUAL_FDA_IDENTITY_GAP_REVIEW_PACKETS_PREPARED",
+  "source_research_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40257950306",
+  "source_aggregate_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40257950306/artifacts/12623257728",
+  "research_cutoff": "2026-10-25",
+  "private_research_group_count": 101,
+  "published_letter_references": 124,
+  "first_reviewer_blank_rows": 124,
+  "second_reviewer_blank_rows": 124,
+  "references_without_source_pdf": 1,
+  "source_classification_rows": {
+    "AMBIGUOUS_APPLICATION_ID_RESEARCH": 17,
+    "APPLICATION_IDENTITY_RESEARCH": 107
+  },
+  "reviewer_identity_authenticated": false,
+  "independent_reviews_completed": 0,
+  "review_cycle_outcomes_verified": 0,
+  "complete_original_nda_bla_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "approval_rate": null,
+  "readiness": "REVIEW_REQUIRED",
+  "reviewer_detail_records_not_exported": true,
+  "source_bytes_from_prior_pdf_probes_not_independently_revalidated_in_handoff": true,
+  "note": "Both private reviewer role files are blank, source-fingerprint locked, and nonclinical. They are not human reviews, regulatory outcomes, or training-ready FDA historical decisions."
+}
