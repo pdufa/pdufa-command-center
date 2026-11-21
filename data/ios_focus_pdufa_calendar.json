@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-20T15:43:42Z",
+  "generatedAt": "2026-11-21T14:54:38Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -8,7 +8,7 @@
       "ticker": "CYTK",
       "company": "Cytokinetics",
       "date": "2026-11-14",
-      "marketCapUsd": 7195018079,
+      "marketCapUsd": 7149047973,
       "id": "focus-cytk-nct05767346",
       "ncts": [
         "NCT05767346"
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 437230000,
+      "marketCapUsd": 436650000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
@@ -32,7 +32,7 @@
       "ticker": "SVRA",
       "company": "Savara Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 988393329,
+      "marketCapUsd": 1041342972,
       "id": "focus-svra-nct04544293",
       "ncts": [
         "NCT04544293"
@@ -69,7 +69,7 @@
       "ticker": "MLYS",
       "company": "Mineralys Therapeutics, Inc.",
       "date": "2026-12-22",
-      "marketCapUsd": 1282306765,
+      "marketCapUsd": 1220316797,
       "id": "focus-mlys-nct06153693",
       "ncts": [
         "NCT06153693"
@@ -93,7 +93,7 @@
       "ticker": "AGIO",
       "company": "Agios Pharmaceuticals, Inc.",
       "date": "2027-02-01",
-      "marketCapUsd": 1787710468,
+      "marketCapUsd": 1775150442,
       "id": "focus-agio-nct05031780",
       "ncts": [
         "NCT05031780"
@@ -105,7 +105,7 @@
       "ticker": "BLTE",
       "company": "Belite Bio, Inc.",
       "date": "2027-02-12",
-      "marketCapUsd": 6351722552,
+      "marketCapUsd": 6291717057,
       "id": "focus-blte-nct05244304",
       "ncts": [
         "NCT05244304"
@@ -117,7 +117,7 @@
       "ticker": "APMD",
       "company": "Apnimed",
       "date": "2027-02-28",
-      "marketCapUsd": 741027866,
+      "marketCapUsd": 717922784,
       "id": "focus-apmd-nct05811247",
       "ncts": [
         "NCT05811247",
@@ -130,7 +130,7 @@
       "ticker": "SRPT",
       "company": "Sarepta Therapeutics, Inc.",
       "date": "2027-02-28",
-      "marketCapUsd": 1583873475,
+      "marketCapUsd": 1558136871,
       "id": "focus-srpt-nct02500381",
       "ncts": [
         "NCT02500381"
@@ -142,7 +142,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2230000000,
+      "marketCapUsd": 2220000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
@@ -154,7 +154,7 @@
       "ticker": "IMNM",
       "company": "Immunome, Inc.",
       "date": "2027-04-28",
-      "marketCapUsd": 2028493161,
+      "marketCapUsd": 1961191583,
       "id": "focus-imnm-nct04871282",
       "ncts": [
         "NCT04871282"
@@ -166,7 +166,7 @@
       "ticker": "AXSM",
       "company": "Axsome Therapeutics, Inc.",
       "date": "2027-05-01",
-      "marketCapUsd": 7150967961,
+      "marketCapUsd": 7048397990,
       "id": "focus-axsm-nct05059223",
       "ncts": [
         "NCT05059223",
@@ -179,7 +179,7 @@
       "ticker": "ZBIO",
       "company": "Zenas BioPharma, Inc.",
       "date": "2027-05-27",
-      "marketCapUsd": 1700000000,
+      "marketCapUsd": 1620000000,
       "id": "focus-zbio-nct05662241",
       "ncts": [
         "NCT05662241"
@@ -191,7 +191,7 @@
       "ticker": "URGN",
       "company": "UroGen Pharma Ltd.",
       "date": "2027-06-14",
-      "marketCapUsd": 1465058473,
+      "marketCapUsd": 1461134647,
       "id": "focus-urgn-nct06331299",
       "ncts": [
         "NCT06331299"
