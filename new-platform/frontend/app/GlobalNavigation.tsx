@@ -13,7 +13,6 @@ const links=[
  {label:"NEWS",href:"/news"},
  {label:"PREDICTIONS",href:"/predictions"},
  {label:"ASSESMENTS",href:"/predictions/assessment"},
- {label:"INSTALLATION",href:"/installation-audit"},
 ];
 
 export default function GlobalNavigation(){
