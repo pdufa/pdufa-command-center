@@ -1,40 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-21T04:23:05.240971+00:00",
+  "started_at": "2026-11-22T10:52:15.900279+00:00",
   "registry_companies": 717,
   "pages": 5,
   "studies_checked": 4075,
   "matched_posted_results": 103,
-  "new_records": 3,
-  "new_record_details": [
-    {
-      "ticker": "UTHR",
-      "drug": "Inhaled Treprostinil | Placebo",
-      "nct_id": "NCT04708782",
-      "results_posted_at": "2026-11-20",
-      "source_url": "https://clinicaltrials.gov/study/NCT04708782",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    },
-    {
-      "ticker": "AZN",
-      "drug": "Benralizumab | Placebo",
-      "nct_id": "NCT04053634",
-      "results_posted_at": "2026-11-20",
-      "source_url": "https://clinicaltrials.gov/study/NCT04053634",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    },
-    {
-      "ticker": "AMGN",
-      "drug": "Apremilast",
-      "nct_id": "NCT04175613",
-      "results_posted_at": "2026-11-20",
-      "source_url": "https://clinicaltrials.gov/study/NCT04175613",
-      "verification_status": "REGISTERED_RESULTS_POSTED"
-    }
-  ],
+  "new_records": 0,
+  "new_record_details": [],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-21T04:23:10.040570+00:00",
+  "finished_at": "2026-11-22T10:52:20.259814+00:00",
   "stored_results": 2510,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
