@@ -2,8 +2,25 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-23",
-  "reassessmentQueue": [],
+  "pacificDate": "2026-11-24",
+  "reassessmentQueue": [
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "cytk-aficamten-nhcm",
+      "ncts": [
+        "NCT06081894"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    },
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "imnm-desmoid",
+      "ncts": [
+        "NCT04871282"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    }
+  ],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -13,17 +30,17 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-22",
-  "runAtUTC": "2026-11-23T17:57:41.318471+00:00",
+  "rosterSnapshotAsOf": "2026-11-24",
+  "runAtUTC": "2026-11-24T17:34:29.826244+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
     "focusTrials": 32,
-    "newOrChangedEvidenceTrials": 0,
+    "newOrChangedEvidenceTrials": 2,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 0,
+    "reassessmentQueueCycles": 2,
     "scientificAssessmentsRevalidated": 0,
     "sourceRetrieved": 32,
     "sourceUnavailable": 0,
@@ -194,7 +211,7 @@
       ],
       "calibratedProbability": null,
       "company": "Immunome, Inc.",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -210,7 +227,7 @@
       "registryStatus": "ACTIVE_NOT_RECRUITING",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "5bc48b5cef6ef9d587f1e00ee17d154c9027c6d597d3f785206c17fbc9cf99d0",
+      "sourceHash": "62d852b89ea8296e3c016c06493ddc7a9d743a6ab4197017d201ce5055f55259",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04871282",
       "ticker": "IMNM"
@@ -558,7 +575,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cytokinetics, Inc.",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -570,10 +587,10 @@
       "primaryCompletion": "2026-08-31",
       "registeredPrimaryOutcomeCount": 2,
       "registeredSeriousAdverseEventModule": false,
-      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryStatus": "COMPLETED",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "4e5217ded1606f05949bc8ecb6ae27fd314fb776d3de7d669c7a415bfc33c160",
+      "sourceHash": "6fc5f4ee8d549ede4910b397b5c64556597f340acc45f3a8dcfdff51e9424080",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06081894",
       "ticker": "CYTK"
