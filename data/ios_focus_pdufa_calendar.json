@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-23T18:41:54Z",
+  "generatedAt": "2026-11-24T18:14:49Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -32,7 +32,7 @@
       "ticker": "SVRA",
       "company": "Savara Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 939856157,
+      "marketCapUsd": 946474862,
       "id": "focus-svra-nct04544293",
       "ncts": [
         "NCT04544293"
@@ -44,7 +44,7 @@
       "ticker": "COGT",
       "company": "Cogent Biosciences, Inc.",
       "date": "2026-11-30",
-      "marketCapUsd": 4648261785,
+      "marketCapUsd": 4816166431,
       "id": "focus-cogt-nct05208047",
       "ncts": [
         "NCT05208047"
@@ -56,7 +56,7 @@
       "ticker": "CORT",
       "company": "Corcept Therapeutics",
       "date": "2026-12-17",
-      "marketCapUsd": 6962770595,
+      "marketCapUsd": 7029530891,
       "id": "focus-cort-nct03697109",
       "ncts": [
         "NCT03697109",
@@ -81,7 +81,7 @@
       "ticker": "PRAX",
       "company": "Praxis Precision Medicines, Inc.",
       "date": "2027-01-29",
-      "marketCapUsd": 8397485068,
+      "marketCapUsd": 8427393230,
       "id": "focus-prax-nct06087276",
       "ncts": [
         "NCT06087276"
@@ -105,7 +105,7 @@
       "ticker": "BLTE",
       "company": "Belite Bio, Inc.",
       "date": "2027-02-12",
-      "marketCapUsd": 5129865703,
+      "marketCapUsd": 5235378720,
       "id": "focus-blte-nct05244304",
       "ncts": [
         "NCT05244304"
@@ -130,7 +130,7 @@
       "ticker": "SRPT",
       "company": "Sarepta Therapeutics, Inc.",
       "date": "2027-02-28",
-      "marketCapUsd": 1429453854,
+      "marketCapUsd": 1468058759,
       "id": "focus-srpt-nct02500381",
       "ncts": [
         "NCT02500381"
@@ -142,7 +142,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2210000000,
+      "marketCapUsd": 2290000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
@@ -166,7 +166,7 @@
       "ticker": "AXSM",
       "company": "Axsome Therapeutics, Inc.",
       "date": "2027-05-01",
-      "marketCapUsd": 6804334060,
+      "marketCapUsd": 6732861200,
       "id": "focus-axsm-nct05059223",
       "ncts": [
         "NCT05059223",
@@ -179,7 +179,7 @@
       "ticker": "ZBIO",
       "company": "Zenas BioPharma, Inc.",
       "date": "2027-05-27",
-      "marketCapUsd": 1620000000,
+      "marketCapUsd": 1680000000,
       "id": "focus-zbio-nct05662241",
       "ncts": [
         "NCT05662241"
@@ -191,7 +191,7 @@
       "ticker": "URGN",
       "company": "UroGen Pharma Ltd.",
       "date": "2027-06-14",
-      "marketCapUsd": 1356172306,
+      "marketCapUsd": 1375791435,
       "id": "focus-urgn-nct06331299",
       "ncts": [
         "NCT06331299"
