@@ -2,25 +2,8 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-24",
-  "reassessmentQueue": [
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cytk-aficamten-nhcm",
-      "ncts": [
-        "NCT06081894"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "imnm-desmoid",
-      "ncts": [
-        "NCT04871282"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    }
-  ],
+  "pacificDate": "2026-11-25",
+  "reassessmentQueue": [],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -31,16 +14,16 @@
     "unchangedEvidenceNotNewValidation": true
   },
   "rosterSnapshotAsOf": "2026-11-24",
-  "runAtUTC": "2026-11-24T17:34:29.826244+00:00",
+  "runAtUTC": "2026-11-25T17:06:42.790633+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
     "focusTrials": 32,
-    "newOrChangedEvidenceTrials": 2,
+    "newOrChangedEvidenceTrials": 0,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 2,
+    "reassessmentQueueCycles": 0,
     "scientificAssessmentsRevalidated": 0,
     "sourceRetrieved": 32,
     "sourceUnavailable": 0,
@@ -211,7 +194,7 @@
       ],
       "calibratedProbability": null,
       "company": "Immunome, Inc.",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -575,7 +558,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cytokinetics, Inc.",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
