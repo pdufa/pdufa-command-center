@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "FDA_PRIOR_PUBLISHED_PDF_PAGE_SAMPLE_OBSERVED_NOT_ADJUDICATED",
+  "research_cutoff": "2026-10-25",
+  "source_workflow_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40259725191",
+  "source_aggregate_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40259725191/artifacts/12624610512",
+  "sampled_unique_pdf_documents_requested": 8,
+  "sampled_pdf_bytes_sha256_reconfirmed": 8,
+  "sampled_pdf_documents_not_retrieved_or_parsed": 0,
+  "source_sample_unique_pdf_population": 122,
+  "pages_examined_for_candidate_app_tokens": 46,
+  "pages_without_extractable_text": 9,
+  "pages_with_multiple_provisional_app_candidates": 0,
+  "candidate_application_numbers_with_page_hits": 8,
+  "original_action_page_ranges_independently_verified": 0,
+  "review_cycles_independently_verified": 0,
+  "complete_nda_bla_original_decision_denominator_verified": false,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "private_pdf_page_hints_not_exported": true,
+  "document_selection": "first 8 sorted previously confirmed full FDA PDF SHA-256s; technically reproducible, not randomized or nationally representative",
+  "limitations": [
+    "Only first 40 pages would be inspected for PDFs longer than 40 pages; this run examined 46 pages in eight documents.",
+    "Nine pages had no extractable text and need visual/OCR review before any page-level adjudication.",
+    "A candidate application number appearing on a PDF page is not evidence of the action date, original review cycle, approval, or nonapproval.",
+    "The archived corpus of published FDA CRLs is not a complete NDA/BLA decision population."
+  ]
+}

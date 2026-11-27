@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "ORIGINAL_SUBMISSION_SOURCE_MEMBERSHIP_RECONCILED_NOT_FDA_DECISIONS",
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40252457591",
+  "research_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40252457591/artifacts/12620868565",
+  "research_cutoff": "2026-10-25",
+  "source_versions": {
+    "openfda_approved_registry_artifact_json_sha256": "adb24d7921d56bc3824b57e785164a32287efc69a9d3fe9b940da97f6c65f5b2",
+    "tabular_applications_tsv_sha256": "f7fc18dcc826b74b250f7c87d1d9e4b04b56207fc9eac882801a64745a388dd6",
+    "tabular_submissions_tsv_sha256": "d74236b31ebe27ce80f529c6d7b6921f9ca95029d91fd92a30bdd95aaf0b3d00"
+  },
+  "tabular_original_submission_keys": 6033,
+  "openfda_archived_original_submission_keys": 6032,
+  "net_tabular_minus_openfda_original_keys": 1,
+  "shared_original_submission_keys": 6032,
+  "tabular_keys_absent_from_openfda": 1,
+  "openfda_keys_absent_from_tabular": 0,
+  "distinct_applications_with_tabular_only_keys": 1,
+  "distinct_applications_with_openfda_only_keys": 0,
+  "tabular_only_key_examples": [
+    {
+      "application_id": "NDA206627",
+      "original_submission_number": 1
+    }
+  ],
+  "openfda_only_key_examples": [],
+  "shared_keys_with_raw_status_mismatch": 0,
+  "shared_keys_with_raw_status_date_mismatch": 0,
+  "original_fda_action_dates_independently_verified": 0,
+  "review_cycles_independently_verified": 0,
+  "complete_fda_decision_denominator_verified": false,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "source_membership_does_not_establish_fda_outcome": true,
+  "unapproved_applications_absent_from_export_possible": true,
+  "note": "One NDA Original 1 submission exists in the pinned official FDA tabular extract; its entire application identity NDA206627 is absent from the separately pinned OpenFDA archive. A public 2014 original approval package exists, but independently reviewer-adjudicated review-cycle decisions remain zero.",
+  "examples_truncated": false,
+  "status_mismatch_key_examples": [],
+  "date_mismatch_key_examples": [],
+  "tabular_only_original_submission_fda_document_lead": {
+    "application_id": "NDA206627",
+    "original_submission_number": 1,
+    "fda_primary_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2014/206627Orig1s000Approv.pdf",
+    "source_document_title": "FDA original approval package for Hysingla ER",
+    "fda_document_application_id": "206627Orig1s000",
+    "published_fda_approval_date": "2014-11-20",
+    "source_document_page_index_zero_based": 0,
+    "original_action_letter_page_index_zero_based": 3,
+    "source_document_is_official": true,
+    "verified_review_cycle_labels": 0,
+    "independent_human_adjudication_complete": false,
+    "evidence_use": "PUBLIC_FDA_SOURCE_LEAD_NOT_TRAINING_LABEL"
+  },
+  "tabular_only_keys_with_entire_application_absent_from_openfda": 1,
+  "tabular_only_keys_in_openfda_application_but_missing_original": 0,
+  "openfda_application_identity_NDA206627_present": false
+}
