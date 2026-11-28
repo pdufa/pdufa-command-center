@@ -1,16 +1,25 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-27T11:54:35.246142+00:00",
+  "started_at": "2026-11-28T11:30:56.808131+00:00",
   "registry_companies": 717,
   "pages": 5,
-  "studies_checked": 4034,
-  "matched_posted_results": 100,
-  "new_records": 0,
-  "new_record_details": [],
+  "studies_checked": 4077,
+  "matched_posted_results": 102,
+  "new_records": 1,
+  "new_record_details": [
+    {
+      "ticker": "NBIX",
+      "drug": "Placebo | Valbenazine",
+      "nct_id": "NCT05654870",
+      "results_posted_at": "2026-11-27",
+      "source_url": "https://clinicaltrials.gov/study/NCT05654870",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    }
+  ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-27T11:54:43.070711+00:00",
-  "stored_results": 2510,
+  "finished_at": "2026-11-28T11:31:03.782620+00:00",
+  "stored_results": 2511,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
